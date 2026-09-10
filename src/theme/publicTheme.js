@@ -5,7 +5,6 @@ import { borderRadius } from "./borderRadius";
 
 export const publicTheme = {
     mode: 'light',
-    
     colors,
     typography,
     borderRadius,

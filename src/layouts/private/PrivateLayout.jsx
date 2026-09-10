@@ -1,22 +1,34 @@
 import { Outlet } from "react-router-dom";
-
-import Navbar from "../../components/navbar/Navbar";
-import Footer from "../../components/footer/Footer";
 import useResetScrollPosition from "../../hooks/useResetScrollPosition";
+import {privateTheme} from "../../theme/privateTheme";
+import styled, { ThemeProvider } from "styled-components";
+import ScrollToTopButton from "../../components/scrollToTopButton/ScrollToTopButton";
 
 const PrivateLayout = () => {
     useResetScrollPosition();
 
     return (
-        <>
-        <Navbar />
+        <ThemeProvider theme={privateTheme}>
+            <PrivateLayoutContainer>
 
-        <main>
-            <Outlet />
-        </main>
+                <Main>
+                    <Outlet />
+                </Main>
 
-        <Footer />
-        </>
+                <ScrollToTopButton />
+
+            </PrivateLayoutContainer>
+        </ThemeProvider>
     )
 };
 export default PrivateLayout;
+
+const PrivateLayoutContainer = styled.div`
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+`;
+
+const Main = styled.main`
+    flex: 1;
+`
