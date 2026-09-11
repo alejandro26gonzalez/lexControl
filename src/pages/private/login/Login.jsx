@@ -26,15 +26,12 @@ const Login = () => {
                     </BackLink>
 
                     <Title>
-                        Tu estrategia legal, bajo
-                        <br />
-                        control absoluto.
+                        Acceso seguro <br/>
+                        a tu gestión jurídica
                     </Title>
 
                     <Description>
-                        Accede en tiempo real al estado de tus procesos,
-                        decisiones judiciales y vencimientos sin barreras ni
-                        incertidumbre.
+                        Ingresa a tu espacio de control para monitorear expedientes, consultar actuaciones y hacer seguimiento a tus procesos en tiempo real.
                     </Description>
 
                     <LoginForm />

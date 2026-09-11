@@ -358,6 +358,10 @@ export const RegisterButton = styled.button`
     width: 100%;
     height: 48px;
 
+    display:flex;
+    justify-content: center;
+    align-items: center;
+
     margin-top: 0.2rem;
 
     border: 1px solid ${({ theme }) => theme.colors.primary};
@@ -453,4 +457,229 @@ export const LoginLink = styled.a`
     &:hover {
         color: ${({ theme }) => theme.colors.accentHover};
     }
+`;
+
+export const StepActions = styled.div`
+    display: grid;
+
+    grid-template-columns: auto 1fr;
+
+    gap: 0.75rem;
+
+    width: 100%;
+
+    margin-top: 0.5rem;
+
+    @media (max-width: ${breakpoints.mobile}) {
+        grid-template-columns: 1fr;
+
+        gap: 0.6rem;
+    }
+`;
+
+export const SecondaryButton = styled.button`
+    min-width: 100px;
+    height: 48px;
+
+    padding: 0 1.25rem;
+
+    border: 1px solid ${({ theme }) => theme.colors.border};
+    border-radius: ${({ theme }) => theme.borderRadius.small};
+
+    background-color: transparent;
+    color: ${({ theme }) => theme.colors.text};
+
+    font-family: ${({ theme }) => theme.typography.fontFamily.body};
+    font-size: ${({ theme }) => theme.typography.button.fontSize};
+    font-weight: ${({ theme }) => theme.typography.button.fontWeight};
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
+
+    &:hover {
+        border-color: ${({ theme }) => theme.colors.textSecondary};
+
+        background-color: ${({ theme }) => theme.colors.surfaceAlt};
+    }
+
+    &:focus-visible {
+        outline: 2px solid ${({ theme }) => theme.colors.tech};
+        outline-offset: 3px;
+    }
+
+    @media (max-width: ${breakpoints.mobile}) {
+        order: 2;
+
+        width: 100%;
+    }
+`;
+
+export const VerificationContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+
+    width: 100%;
+
+    padding: 1rem 0 0;
+`;
+
+export const VerificationLabel = styled.label`
+    margin-bottom: 0.75rem;
+
+    font-family: ${({ theme }) => theme.typography.fontFamily.body};
+    font-size: 0.9rem;
+    font-weight: 700;
+
+    color: ${({ theme }) => theme.colors.text};
+`;
+
+export const VerificationInput = styled.input`
+    width: 100%;
+    max-width: 360px;
+
+    height: 60px;
+
+    padding: 0 1rem;
+
+    border: 1px solid ${({ theme }) => theme.colors.border};
+    border-radius: ${({ theme }) => theme.borderRadius.medium};
+
+    background-color: ${({ theme }) => theme.colors.surface};
+
+    color: ${({ theme }) => theme.colors.text};
+
+    font-family: ${({ theme }) => theme.typography.fontFamily.body};
+    font-size: 1.5rem;
+    font-weight: 700;
+
+    letter-spacing: 0.5rem;
+
+    text-align: center;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+
+    &::placeholder {
+        color: ${({ theme }) => theme.colors.textMuted};
+
+        letter-spacing: 0.4rem;
+    }
+
+    &:focus {
+        border-color: ${({ theme }) => theme.colors.accent};
+
+        box-shadow: 0 0 0 3px rgba(182, 154, 106, 0.12);
+    }
+
+    @media (max-width: ${breakpoints.mobile}) {
+        height: 55px;
+
+        font-size: 1.25rem;
+    }
+`;
+
+export const VerificationHelp = styled.p`
+    max-width: 380px;
+
+    margin: 1rem 0 0;
+
+    font-family: ${({ theme }) => theme.typography.fontFamily.body};
+    font-size: 0.8rem;
+    line-height: 1.5;
+
+    text-align: center;
+
+    color: ${({ theme }) => theme.colors.textMuted};
+`;
+
+export const ResendButton = styled.button`
+    margin-top: 0.75rem;
+
+    padding: 0;
+
+    border: none;
+
+    background: transparent;
+
+    color: ${({ theme }) => theme.colors.text};
+
+    font-family: ${({ theme }) => theme.typography.fontFamily.body};
+    font-size: 0.8rem;
+    font-weight: 700;
+
+    text-decoration: underline;
+    text-underline-offset: 3px;
+
+    cursor: pointer;
+
+    &:hover {
+        color: ${({ theme }) => theme.colors.accentHover};
+    }
+
+    &:focus-visible {
+        outline: 2px solid ${({ theme }) => theme.colors.tech};
+        outline-offset: 3px;
+    }
+`;
+
+export const SuccessContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+
+    width: 100%;
+
+    text-align: center;
+`;
+
+export const SuccessIcon = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 64px;
+    height: 64px;
+
+    margin-bottom: 1.5rem;
+
+    border-radius: 50%;
+
+    background-color: ${({ theme }) => theme.colors.success};
+
+    color: ${({ theme }) => theme.colors.white};
+
+    font-size: 1.8rem;
+    font-weight: 700;
+`;
+
+export const SuccessTitle = styled.h2`
+    margin: 0 0 0.75rem;
+
+    font-family: ${({ theme }) => theme.typography.fontFamily.heading};
+    font-size: clamp(2rem, 3vw, 2.75rem);
+    font-weight: ${({ theme }) => theme.typography.h2.fontWeight};
+
+    color: ${({ theme }) => theme.colors.text};
+`;
+
+export const SuccessDescription = styled.p`
+    max-width: 420px;
+
+    margin: 0 0 2rem;
+
+    font-family: ${({ theme }) => theme.typography.fontFamily.body};
+    font-size: 0.9rem;
+    line-height: 1.55;
+
+    color: ${({ theme }) => theme.colors.textSecondary};
 `;

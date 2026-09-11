@@ -18,8 +18,8 @@ export const homeConfig = {
                 variant: 'primary',
             },
             {
-                label: 'Inicia sesión si ya estás registrado',
-                path: '/portal/login',
+                label: 'Regístrate',
+                path: '/portal/register',
                 variant: 'secondary',
             },
         ]

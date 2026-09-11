@@ -65,6 +65,8 @@ export const PageContainer = styled.main`
     width: 100%;
     min-height: 100vh;
 
+    gap: 1rem;
+
     padding: 1rem;
 
     background-color: ${({ theme }) => theme.colors.primary};

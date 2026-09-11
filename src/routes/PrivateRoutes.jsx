@@ -4,6 +4,7 @@ import PrivateLayout from "../layouts/private/PrivateLayout";
 
 const Login = React.lazy(() => import("../pages/private/login/Login"));
 const Register = React.lazy(() => import("../pages/private/registration/Registry"));
+const RecoverPass = React.lazy(() => import ("../pages/private/recover/RecoverPass"));
 
 const PrivateRoutes = [
     {
@@ -16,7 +17,12 @@ const PrivateRoutes = [
             {
                 path: "/portal/register",
                 element: <Register />
+            },
+            {
+                path: "/portal/forgot-password",
+                element: <RecoverPass />
             }
+
         ]
     }
 ];

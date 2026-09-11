@@ -54,7 +54,7 @@ const RegisterImpact = () => {
 
             <ImpactContent>
                 <Logo
-                    src={IMAGES.logoWhite}
+                    src={IMAGES.logoBlack}
                     alt="LexControl"
                 />
 
