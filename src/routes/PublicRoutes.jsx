@@ -8,6 +8,7 @@ const Specialties = React.lazy(() => import("../pages/public/specialties/Special
 const Team = React.lazy(() => import("../pages/public/team/Team"));
 const Resources = React.lazy(() => import("../pages/public/resources/Resources"));
 const Contact = React.lazy(() => import("../pages/public/contact/Contact"));
+const Legal = React.lazy(() => import("../pages/public/legalInfo/LegalLayout"));
 
 const PublicRoutes =[
     {
@@ -37,7 +38,10 @@ const PublicRoutes =[
                 path: '/contact',
                 element: <Contact />,
             },
-            
+            {
+                path: '/legal',
+                element: <Legal />
+            }
         ]
     }
 ];

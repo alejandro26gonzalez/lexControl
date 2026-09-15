@@ -17,26 +17,51 @@ import {
     Divider,
 } from "../../../styles/auth/login/loginForm.styles";
 
-const LoginForm = () => {
+const LoginForm = ({ login }) => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = (event) => {
+    async function handleSubmit(event) {
         event.preventDefault();
 
-        // Posteriormente:
-        // conectar con POST /api/auth/login
-    };
+        setError("");
+        setIsLoading(true);
+
+        try {
+            const response = await login(email, password);
+
+            console.log("LOGIN FORM → login exitoso:", response);
+
+        } catch (error) {
+            console.error("LOGIN FORM → error:", error);
+
+            const message =
+                error?.data?.error ||
+                "No fue posible iniciar sesión.";
+
+            setError(message);
+        } finally {
+            setIsLoading(false);
+        }
+    }
 
     return (
         <Form onSubmit={handleSubmit}>
             <Field>
-                <Label htmlFor="email">Email o usuario</Label>
+                <Label htmlFor="email">Email</Label>
 
                 <Input
                 id="email"
                 type="text"
-                placeholder="Ingresa tu email o usuario..."
+                placeholder="Ingresa tu email..."
                 autoComplete="username"
+                value={email}
+                onChange={
+                    (event) => setEmail(event.target.value)
+                }
                 />
             </Field>
 
@@ -49,21 +74,31 @@ const LoginForm = () => {
                     type={showPassword ? "text" : "password"}
                     placeholder="***********"
                     autoComplete="current-password"
+                    value={password}
+                    onChange={
+                        (event) => setPassword(event.target.value)
+                    }
                 />
 
                 <EyeButton
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     aria-label={
-                    showPassword
-                        ? "Ocultar contraseña"
-                        : "Mostrar contraseña"
+                        showPassword
+                            ? "Ocultar contraseña"
+                            : "Mostrar contraseña"
                     }
                 >
                     {showPassword ? "◉" : "◌"}
                 </EyeButton>
                 </PasswordContainer>
             </Field>
+
+            {error && (
+                <div role="alert">
+                    {error}
+                </div>
+            )}
 
             <RegisterRow>
                 <span>¿No tienes cuenta?</span>
@@ -83,8 +118,14 @@ const LoginForm = () => {
                 </ForgotLink>
             </OptionsRow>
 
-            <SubmitButton type="submit">
-                Iniciar sesión
+            <SubmitButton 
+            type="submit"
+            disabled={isLoading}
+            >
+                {isLoading
+                    ? "Iniciando sesión..."
+                    : "Iniciar sesión"
+                }
             </SubmitButton>
 
             <Divider>

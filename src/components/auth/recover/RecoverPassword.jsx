@@ -11,15 +11,14 @@ import {
     EyeButton,
     SubmitButton,
     LoginRedirect,
-    Divider,
 } from '../../../styles/auth/recover/recoverPass.styles';
 import {
     VerificationContainer,
     VerificationInput,
     VerificationHelp,
     VerificationLabel,
-    Title,
-    Description,
+    FormTitle as Title,
+    FormDescription as Description,
     StepActions,
     SecondaryButton,
     RegisterButton as RecoverButton,
@@ -43,9 +42,6 @@ const RecoverPassword = () => {
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-    const [resendAvailable, setResendAvailable] = useState(false);
-    const [countdown, setCountdown] = useState(60);
 
     const getTitle = () => {
         switch (currentStep) {
@@ -107,16 +103,6 @@ const RecoverPassword = () => {
         // actualizar contraseña en backend
 
         setCurrentStep(4);
-    };
-
-    const handleResendCode = () => {
-        if (!resendAvailable) return;
-
-        // Posteriormente:
-        // solicitar nuevo código al backend
-
-        setCountdown(60);
-        setResendAvailable(false);
     };
 
     const handleBackToLogin = () => {

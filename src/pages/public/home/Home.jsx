@@ -8,6 +8,8 @@ import ContentSplit from "../../../components/contentSplit/ContentSplit";
 import Banner from "../../../components/banner/Banner";
 
 const Home = () => {
+
+
     return (
         <GlobalContainer>
             <Hero {...homeConfig.hero}/>

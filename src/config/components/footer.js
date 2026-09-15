@@ -44,17 +44,17 @@ export const footerConfig = {
         {
             id: 'legal',
             label: 'Aviso legal',
-            path: '/aviso-legal',
+            path: '/legal',
         },
         {
             id: 'privacy',
             label: 'Política de privacidad',
-            path: '/politica-privacidad',
+            path: '/legal',
         },
         {
             id: 'terms',
             label: 'Términos y condiciones',
-            path: '/terminos-y-condiciones',
+            path: '/legal',
         },
     ],
 }

@@ -110,6 +110,7 @@ const ContactLocation = ({ config }) => {
                         );
                     })}
                 </Features>
+                
             </Container>
         </LocationSection>
     );

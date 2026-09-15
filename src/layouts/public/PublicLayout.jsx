@@ -11,7 +11,7 @@ const PublicLayout = () => {
     useResetScrollPosition();
     const { pathname }= useLocation();
 
-    const darkFooterRoutes = ['/about'];
+    const darkFooterRoutes = ['/about', '/legal'];
 
     const isDarkFooter = darkFooterRoutes.includes(pathname);
 
