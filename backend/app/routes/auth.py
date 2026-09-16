@@ -13,6 +13,11 @@ from app.helpers.auth import (
     SESSION_DURATION_HOURS
 )
 
+from app.helpers.password_reset import (
+    validate_password_reset_otp,
+    create_password_reset_session
+)
+
 auth_bp = Blueprint(
     "auth", 
     __name__, 
@@ -124,4 +129,45 @@ def logout():
     
     return jsonify({
         "message": "Sesión cerrada correctamente"
+    }), 200
+
+@auth_bp.route("/verify-otp", methods=["POST"])
+def verify_otp():
+    data = request.get_json()
+
+    if not data:
+        return jsonify({
+            "error": "Datos requeridos."
+        }), 400
+
+    user_id = data.get("user_id")
+    otp = data.get("otp")
+
+    if not user_id or not otp:
+        return jsonify({
+            "error": "Usuario y OTP son obligatorios."
+        }), 400
+
+    user = db.session.get(User, user_id)
+
+    if not user:
+        return jsonify({
+            "error": "Solicitud inválida."
+        }), 400
+
+    valid, otp_record, message = validate_password_reset_otp(
+        user_id,
+        otp
+    )
+
+    if not valid:
+        return jsonify({
+            "error": message
+        }), 400
+
+    reset_token, reset_session = create_password_reset_session(user_id)
+
+    return jsonify({
+        "message": "OTP validado exitosamente.",
+        "reset token": reset_token
     }), 200

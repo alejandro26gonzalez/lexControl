@@ -30,7 +30,9 @@ def create_app():
         User,
         UserRole,
         Role,
-        Session
+        Session,
+        PasswordResetOTP,
+        PasswordResetSession
     )
     
     from app.routes.auth import auth_bp

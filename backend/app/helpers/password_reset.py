@@ -5,6 +5,7 @@ from datetime import datetime, timezone, timedelta
 
 from app import db
 from app.models import PasswordResetOTP
+from app.models import PasswordResetSession
 
 OTP_LENGTH = 8
 
@@ -15,7 +16,8 @@ OTP_ALPHABET = (
 )
 
 OTP_EXPIRATION_MINUTES = 5
-MAX_OTP_ATTEMPS = 5
+MAX_OTP_ATTEMPTS = 5
+RESET_SESSION_EXPIRATION_MINUTES = 5
 
 def generate_otp():
     return "".join(
@@ -50,7 +52,7 @@ def invalidate_previous_otps(user_id):
         PasswordResetOTP.user_id == user_id,
         PasswordResetOTP.used_at.is_(None),
         PasswordResetOTP.expires_at > now,
-        PasswordResetOTP.attempts > MAX_OTP_ATTEMPS
+        PasswordResetOTP.attempts > MAX_OTP_ATTEMPTS
     ).all()
     
     for otp_record in active_otps:
@@ -90,7 +92,7 @@ def get_active_password_reset_otp(user_id):
             PasswordResetOTP.user_id == user_id,
             PasswordResetOTP.used_at.is_(None),
             PasswordResetOTP.expires_at > now,
-            PasswordResetOTP.attempts < MAX_OTP_ATTEMPS
+            PasswordResetOTP.attempts < MAX_OTP_ATTEMPTS
         )
         .order_by(PasswordResetOTP.created_at.desc())
         .first()
@@ -111,13 +113,88 @@ def validate_password_reset_otp(user_id, otp):
         otp_record.attempts += 1
         db.session.commit()
         
-        if otp_record.attempts >= MAX_OTP_ATTEMPS:
-            return False, otp_record, "Número máximo de intentos alcanzado-"
+        if otp_record.attempts >= MAX_OTP_ATTEMPTS:
+            return False, otp_record, "Número máximo de intentos alcanzados"
         
         return False, otp_record, "OTP incorrecto."
     
-    otp_record.used_At = datetime.now(timezone.utc)
+    otp_record.used_at = datetime.now(timezone.utc)
     
     db.session.commit()
     
     return True, otp_record, "OTP validado correctamente."
+
+def generate_reset_token():
+    return secrets.token_urlsafe(32)
+
+def hash_reset_token(token):
+    return hashlib.sha256(
+        token.encode("utf-8")
+    ).hexdigest()
+
+def create_password_reset_session(user_id):
+
+    token = generate_reset_token()
+    token_hash = hash_reset_token(token)
+
+    now = datetime.now(timezone.utc)
+
+    reset_session = PasswordResetSession(
+        user_id=user_id,
+        token_hash=token_hash,
+        created_at=now,
+        expires_at=now + timedelta(
+            minutes=RESET_SESSION_EXPIRATION_MINUTES
+        )
+    )
+
+    db.session.add(reset_session)
+    db.session.commit()
+
+    return token, reset_session
+
+def get_active_password_reset_session(token):
+
+    token_hash = hash_reset_token(token)
+
+    now = datetime.now(timezone.utc)
+
+    return (
+        PasswordResetSession.query
+        .filter(
+            PasswordResetSession.token_hash == token_hash,
+            PasswordResetSession.expires_at > now,
+            PasswordResetSession.used_at.is_(None),
+            PasswordResetSession.revoked_at.is_(None)
+        ).first()
+    )
+
+def validate_password_reset_session(token):
+
+    reset_session = get_active_password_reset_session(token)
+
+    if not reset_session:
+        return False, None, "Autorización inválida o expirada"
+
+    return True, reset_session, "Autorización válida."
+
+def consume_password_reset_session(token):
+
+    reset_session = get_active_password_reset_session(token)
+
+    if not reset_session:
+        return(
+            False,
+            None,
+            "Autorización no válida o expirada."
+        )
+
+    reset_session.used_at = datetime.now(timezone.utc)
+
+    db.session.commit()
+
+    return (
+        True,
+        reset_session,
+        "Autorización consumida exitosamente."
+    )
