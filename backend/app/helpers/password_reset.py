@@ -198,3 +198,7 @@ def consume_password_reset_session(token):
         reset_session,
         "Autorización consumida exitosamente."
     )
+
+def consume_password_reset_session_record(reset_session):
+    
+    reset_session.used_at = datetime.now(timezone.utc)

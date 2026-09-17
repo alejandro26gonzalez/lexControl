@@ -15,8 +15,12 @@ from app.helpers.auth import (
 
 from app.helpers.password_reset import (
     validate_password_reset_otp,
-    create_password_reset_session
+    create_password_reset_session,
+    get_active_password_reset_session,
+    consume_password_reset_session_record,
 )
+
+from app.helpers.password_policy import validate_password
 
 auth_bp = Blueprint(
     "auth", 
@@ -28,13 +32,14 @@ auth_bp = Blueprint(
 def login():
     data = request.get_json()
     
-    email = data.get("email")
-    password = data.get("password")
-    
     if not data:
         return jsonify({
             "error": "Datos de autenticación requeridos"
         }), 400
+        
+    email = data.get("email")
+    password = data.get("password")
+    
     
     if not email or not password:
         return jsonify({
@@ -90,7 +95,6 @@ def login():
         }
     }), 200
     
-    
 @auth_bp.route("/me", methods=["GET"])
 def get_me():
     user = get_current_user()
@@ -110,7 +114,6 @@ def get_me():
             "roles": roles
         }
     }), 200
-    
     
 @auth_bp.route("/logout", methods=["POST"])
 def logout():
@@ -169,5 +172,89 @@ def verify_otp():
 
     return jsonify({
         "message": "OTP validado exitosamente.",
-        "reset token": reset_token
+        "reset_token": reset_token
     }), 200
+    
+@auth_bp.route("/reset-password", methods=["POST"])
+def reset_password():
+    
+    data = request.get_json()
+    
+    if not data:
+        return jsonify({
+            "error": "Datos requeridos."
+        }), 400
+        
+    reset_token = data.get("reset_token")
+    new_password = data.get("new_password")
+    confirm_password = data.get("confirm_password")
+    
+    if not reset_token or not new_password or not confirm_password:
+        return jsonify({
+            "error:": "Todos los campos son obligatorios."
+        }), 400
+        
+    if new_password != confirm_password:
+        return jsonify({
+            "error": "Las contraseñas no coinciden."
+        }), 400
+        
+    reset_session = get_active_password_reset_session(reset_token)
+    
+    if not reset_session:
+        return jsonify({
+            "error": "Autorización inválida o expirada."
+        }), 400
+        
+    user = db.session.get(
+        User,
+        reset_session.user_id
+    )
+    
+    if not user or not user.is_active:
+        return jsonify({
+            "error": "Solicitud inválida"
+        }), 400
+        
+    password_valid, password_errors = validate_password(
+        new_password,
+        user.email
+    )
+    
+    if not password_valid:
+        return jsonify({
+            "error": "La contraseña no cumple con la política de privacidad"
+        }), 400
+        
+    try:
+        now = datetime.now(timezone.utc)
+        
+        #1 actualizar contraseña
+        user.set_password(new_password)
+        
+        #2 consultar autorizacion temporal
+        consume_password_reset_session_record(reset_session)
+        
+        #3 revocar sesiones activas
+        active_sessions = Session.query.filter(
+            Session.user_id == user.id,
+            Session.revoked_at.is_(None),
+            Session.expires_at > now
+        ).all()
+        
+        for user_session in active_sessions:
+            user_session.revoked_at = now
+        
+        #4 confirmar toda la operacion
+        db.session.commit()
+        
+        return jsonify({
+            "message": "Contraseña actualizada correctamente."
+        }), 200
+        
+    except Exception:
+        db.session.rollback()
+
+        return jsonify({
+            "error": "No fue posible actualizar la contraseña."
+        }), 500
