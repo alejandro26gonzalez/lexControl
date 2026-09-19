@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify
 
-from app.helpers.auth import role_required
+from app.services import role_required
 
 dashboard_bp = Blueprint(
     "dashboard",

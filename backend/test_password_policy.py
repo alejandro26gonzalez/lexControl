@@ -1,5 +1,5 @@
 from app import create_app
-from app.helpers.password_policy import validate_password
+from app.services.auth.password_policy import validate_password
 
 
 app = create_app()

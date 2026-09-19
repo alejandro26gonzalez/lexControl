@@ -1,7 +1,7 @@
 from app import create_app, db
 from datetime import datetime, timezone
 from app.models import User
-from app.helpers.password_reset import (
+from app.services.auth.password_reset import (
     create_password_reset_session,
     get_active_password_reset_session,
     validate_password_reset_session,

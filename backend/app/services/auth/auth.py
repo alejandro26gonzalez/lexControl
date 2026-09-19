@@ -8,8 +8,6 @@ from flask import jsonify, session
 from app import db
 from app.models import User, Session, UserRole, Role
 
-SESSION_DURATION_HOURS = 8
-
 #genera un token criptográfico seguro para la sesión del user
 def generate_session_token():
     return secrets.token_urlsafe(32)

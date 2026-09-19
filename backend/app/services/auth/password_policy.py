@@ -1,6 +1,5 @@
 import re
 
-
 MIN_PASSWORD_LENGTH = 10
 MAX_PASSWORD_LENGTH = 20
 

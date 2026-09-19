@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { NavLink } from 'react-router-dom';
 
@@ -30,6 +30,11 @@ import {
     SuccessDescription
 } from "../../../styles/auth/registration/registrationForm.styles"
 
+import { 
+    forgotPassword,
+    verifyOTP,
+    resetPassword
+} from '../../../services/authService';
 
 const RecoverPassword = () => {
     const [currentStep, setCurrentStep] = useState(1);
@@ -42,6 +47,12 @@ const RecoverPassword = () => {
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const [otpTimeRemaining, setOtpTimeRemaining] = useState(300);
+
+    const [error, setError] = useState('');
+
+    // importante: generar el back para el contador de reenviar el codigo nuevamente
 
     const getTitle = () => {
         switch (currentStep) {
@@ -65,7 +76,7 @@ const RecoverPassword = () => {
                 return 'Ingresa el correo asociado a tu cuenta y te enviaremos un código de verificación seguro.';
 
             case 2:
-                return `Hemos enviado un código de 6 dígitos a ${email}.`;
+                return `Hemos enviado un código de 8 caracteres a ${email}.`;
 
             case 3:
                 return 'Ingresa una nueva contraseña para proteger tu cuenta.';
@@ -75,38 +86,96 @@ const RecoverPassword = () => {
         }
     };
 
-    const handleEmailSubmit = (event) => {
+    const handleEmailSubmit = async (event) => {
         event.preventDefault();
 
-        // Posteriormente:
-        // enviar email al backend
-        // generar código
-        // enviar código al correo
+        try {
+            await forgotPassword(email);
 
-        setCurrentStep(2);
+            setOtpTimeRemaining(300);
+            setCurrentStep(2);
+        } catch (error) {
+            console.error(
+                "Error validando OTP.",
+                error
+            );
+
+            setError(
+                error?.data?.error || "No fue posible validar el código OTP."
+            );
+        }
     };
 
-    const handleCodeSubmit = (event) => {
+    const handleCodeSubmit = async (event) => {
         event.preventDefault();
 
-        // Posteriormente:
-        // validar código contra backend
+        setError('');
 
-        setCurrentStep(3);
+        try {
+            await verifyOTP(
+                verificationCode
+            );
+
+            setCurrentStep(3);
+        } catch (error) {
+            console.log("Error actualizando la contraseña.", error);
+            setError(error?.data?.error || "No fue posible iniciar la recuperación.")
+        }
+
     };
 
-    const handlePasswordSubmit = (event) => {
+    const handlePasswordSubmit = async (event) => {
         event.preventDefault();
 
-        // Posteriormente:
-        // validar contraseña
-        // actualizar contraseña en backend
+        setError('');
 
-        setCurrentStep(4);
+        try {
+
+            await resetPassword(
+                password,
+                confirmPassword
+            );
+
+            setCurrentStep(4);
+        } catch (error) {
+            console.log("Error validando OTP.", error);
+            setError(error?.data?.error || "No fue posible actualizar la contraseña.")
+        }
+
     };
 
     const handleBackToLogin = () => {
         setCurrentStep(1);
+    };
+
+    useEffect(() => {
+        if (currentStep !== 2) {
+            return;
+        };
+
+        if (otpTimeRemaining <= 0) {
+            return;
+        }
+
+        const timer = setInterval(() => {
+            setOtpTimeRemaining((previous) => {
+                if (previous <= 1) {
+                    clearInterval(timer);
+                    return 0;
+                }
+
+                return previous - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [currentStep, otpTimeRemaining]);
+
+    const formatTime = (seconds) => {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+
+        return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
     };
 
     return (
@@ -175,25 +244,35 @@ const RecoverPassword = () => {
                         </VerificationLabel>
 
                         <VerificationInput
+                            id="verification-code"
                             type="text"
-                            inputMode="numeric"
-                            maxLength={6}
-                            placeholder="000000"
+                            inputMode="text"
+                            maxLength={8}
+                            placeholder="00000000"
                             value={verificationCode}
                             onChange={(event) =>
                                 setVerificationCode(
-                                    event.target.value.replace(
-                                        /\D/g,
-                                        ''
-                                    )
+                                    event.target.value.slice(0 , 8)
                                 )
                             }
+                            autoComplete='one-time-code'
+                            required
                         />
 
                         <VerificationHelp>
-                            Ingresa el código de 6 dígitos que
+                            Ingresa el código OTP de 8 caracteres que
                             enviamos a tu correo electrónico.
                         </VerificationHelp>
+
+                        {otpTimeRemaining > 0 ? (
+                            <VerificationHelp>
+                                Código válido durante: {formatTime(otpTimeRemaining)}
+                            </VerificationHelp>
+                        ) : (
+                            <VerificationHelp>
+                                El código ha expirado. Solicita un nuevo código.
+                            </VerificationHelp>
+                        )}
 
                         <ResendButton type="button">
                             Reenviar código
@@ -208,9 +287,14 @@ const RecoverPassword = () => {
                             Atrás
                         </SecondaryButton>
 
-                        <RecoverButton type="submit">
+                        <RecoverButton 
+                        type="submit"
+                        disabled={otpTimeRemaining === 0}
+                        >
                             Confirmar código
                         </RecoverButton>
+
+
                     </StepActions>
                 </RegisterFormElement>
             )}

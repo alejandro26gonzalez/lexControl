@@ -1,6 +1,6 @@
 from app import create_app
 from app.models import User
-from app.helpers.password_reset import create_password_reset_otp
+from app.services.auth.password_reset import create_password_reset_otp
 
 app = create_app()
 

@@ -1,26 +1,24 @@
-from flask import Blueprint, jsonify, request, session
+from flask import Blueprint, jsonify, request, session, current_app
 from datetime import datetime, timezone, timedelta
+import traceback
 
 from app import db
 from app.models import User, Session
 
-from app.helpers.auth import (
+from app.services import (
     generate_session_token,
     hash_session_token,
     get_current_session,
     get_current_user,
     get_user_roles,
-    SESSION_DURATION_HOURS
+    validate_password,
+    create_password_reset_otp_record,
+    create_recovery_session_record,
+    get_active_recovery_session,
+    consume_recovery_session_record,
+    verify_recovery_otp
 )
 
-from app.helpers.password_reset import (
-    validate_password_reset_otp,
-    create_password_reset_session,
-    get_active_password_reset_session,
-    consume_password_reset_session_record,
-)
-
-from app.helpers.password_policy import validate_password
 
 auth_bp = Blueprint(
     "auth", 
@@ -75,7 +73,7 @@ def login():
         session_token_hash = token_hash,
         created_at = now,
         expires_at = now + timedelta(
-            hours=SESSION_DURATION_HOURS
+            hours=8
         )
     )
     
@@ -143,38 +141,47 @@ def verify_otp():
             "error": "Datos requeridos."
         }), 400
 
-    user_id = data.get("user_id")
     otp = data.get("otp")
 
-    if not user_id or not otp:
+    if not otp:
         return jsonify({
-            "error": "Usuario y OTP son obligatorios."
+            "error": "El OTP es obligatorio."
         }), 400
 
-    user = db.session.get(User, user_id)
+    recovery_token = request.cookies.get("recovery_token")
 
-    if not user:
+    if not recovery_token:
         return jsonify({
-            "error": "Solicitud inválida."
+            "error": "Sesión de recuperación inválida o expirada."
         }), 400
 
-    valid, otp_record, message = validate_password_reset_otp(
-        user_id,
-        otp
-    )
-
-    if not valid:
+    try:
+        valid, recovery_session, otp_record, message = verify_recovery_otp(
+            recovery_token,
+            otp
+        )
+        if not valid:
+            db.session.commit()
+            print("VERIFY OTP - mensaje:", message)
+            print("VERIFY OTP - recovery session:", recovery_session is not None)
+            print("VERIFY OTP - OTP record:", otp_record is not None)
+            return jsonify({
+                "error:": message
+            }), 400
+        
+        db.session.commit()
+        
         return jsonify({
-            "error": message
-        }), 400
-
-    reset_token, reset_session = create_password_reset_session(user_id)
-
-    return jsonify({
-        "message": "OTP validado exitosamente.",
-        "reset_token": reset_token
-    }), 200
+            "message": "OTP validado exitosamente."
+        }), 200
     
+    except Exception:
+        db.session.rollback()
+        traceback.print_exc()
+        return jsonify({
+            "message": "No fue posible validar el OTP."
+        }), 500
+
 @auth_bp.route("/reset-password", methods=["POST"])
 def reset_password():
     
@@ -185,11 +192,10 @@ def reset_password():
             "error": "Datos requeridos."
         }), 400
         
-    reset_token = data.get("reset_token")
     new_password = data.get("new_password")
     confirm_password = data.get("confirm_password")
     
-    if not reset_token or not new_password or not confirm_password:
+    if not new_password or not confirm_password:
         return jsonify({
             "error:": "Todos los campos son obligatorios."
         }), 400
@@ -199,16 +205,25 @@ def reset_password():
             "error": "Las contraseñas no coinciden."
         }), 400
         
-    reset_session = get_active_password_reset_session(reset_token)
+    recovery_token = request.cookies.get("recovery_token")
     
-    if not reset_session:
+    if not recovery_token:
         return jsonify({
-            "error": "Autorización inválida o expirada."
+            "error": "Sesión de recuperación inválida o expirada."
+        }), 400
+        
+    recovery_session = get_active_recovery_session(
+        recovery_token
+    )
+    
+    if not recovery_session:
+        return jsonify({
+            "error": "Debes validar el OTP antes de cambiar la contraseña."
         }), 400
         
     user = db.session.get(
         User,
-        reset_session.user_id
+        recovery_session.user_id
     )
     
     if not user or not user.is_active:
@@ -223,7 +238,8 @@ def reset_password():
     
     if not password_valid:
         return jsonify({
-            "error": "La contraseña no cumple con la política de privacidad"
+            "error": "La contraseña no cumple con la política de privacidad",
+            "details": password_errors
         }), 400
         
     try:
@@ -233,7 +249,9 @@ def reset_password():
         user.set_password(new_password)
         
         #2 consultar autorizacion temporal
-        consume_password_reset_session_record(reset_session)
+        consume_recovery_session_record(
+            recovery_session
+        )
         
         #3 revocar sesiones activas
         active_sessions = Session.query.filter(
@@ -248,9 +266,14 @@ def reset_password():
         #4 confirmar toda la operacion
         db.session.commit()
         
-        return jsonify({
+        # 5. Eliminar cookie de recuperación
+        response = jsonify({
             "message": "Contraseña actualizada correctamente."
-        }), 200
+        })
+        
+        response.delete_cookie("recovery_token")
+        
+        return response, 200
         
     except Exception:
         db.session.rollback()
@@ -258,3 +281,71 @@ def reset_password():
         return jsonify({
             "error": "No fue posible actualizar la contraseña."
         }), 500
+        
+@auth_bp.route("/forgot-password", methods=["POST"])
+def forgot_password():
+    
+    data = request.get_json()
+    
+    if not data:
+        return jsonify({
+            "error": "Datos requeridos"
+        }), 400
+    
+    email = data.get("email")
+    
+    if not email:
+        return jsonify({
+            "error": "El correo electrónico es obligatorio"
+        }), 400
+        
+    user = User.query.filter_by(email=email).first()
+    
+    if user and user.is_active:
+        try:
+            
+            #1. crear la sesion de recuperacion
+            recovery_token, recovery_session = create_recovery_session_record(user.id)
+            
+            #2. crear otp asociado al usuario
+            otp, otp_record = create_password_reset_otp_record(user.id)
+            
+            #3. confirmar ambas operaciones
+            db.session.commit()
+        
+            if current_app.config["ENVIRONMENT"] == "development":
+                print(
+                    f"[DEV] OTP generado para {user.email}: {otp}"
+                )
+    
+            response = jsonify({
+                    "message": (
+                        "Si el correo está registrado, "
+                        "recibirás un código de recuperación."
+                    )
+                })
+            
+            response.set_cookie(
+                "recovery_token",
+                recovery_token,
+                httponly=True,
+                secure=current_app.config["ENVIRONMENT"] == "development",
+                samesite="Lax",
+                max_age=600
+            )
+            
+            return response, 200
+            
+        except Exception as e:
+            db.session.rollback()
+            
+            return jsonify({
+                "error": "No fue posible iniciar la recuperación."
+            }), 500
+            
+    return jsonify({
+        "message": (
+            "Si el correo está registrado, "
+            "Recibirás un código de recuperación."
+        )
+    }), 200

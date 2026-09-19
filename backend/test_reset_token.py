@@ -1,5 +1,5 @@
 from app import create_app
-from app.helpers.password_reset import (
+from app.services.auth.password_reset import (
     validate_password_reset_session,
 )
 
