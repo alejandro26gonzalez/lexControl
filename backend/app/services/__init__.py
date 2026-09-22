@@ -1,7 +1,8 @@
 from app.services.auth.recovery import (
     create_recovery_session_record,
     get_active_recovery_session,
-    consume_recovery_session_record
+    consume_recovery_session_record,
+    get_recovery_session_by_token
 )
 from app.services.auth.password_reset import (
     create_password_reset_otp_record,

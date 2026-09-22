@@ -43,6 +43,13 @@ class User(db.Model):
         nullable=False
     )
     
+    profile = db.relationship(
+        "UserProfile",
+        backref="user",
+        uselist=False,
+        cascade="all, delete-orphan"
+    )
+    
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
         

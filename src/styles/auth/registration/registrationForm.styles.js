@@ -603,31 +603,30 @@ export const VerificationHelp = styled.p`
 
 export const ResendButton = styled.button`
     margin-top: 0.75rem;
-
     padding: 0;
-
     border: none;
-
     background: transparent;
-
     color: ${({ theme }) => theme.colors.text};
-
     font-family: ${({ theme }) => theme.typography.fontFamily.body};
     font-size: 0.8rem;
     font-weight: 700;
-
     text-decoration: underline;
     text-underline-offset: 3px;
-
     cursor: pointer;
-
     &:hover {
         color: ${({ theme }) => theme.colors.accentHover};
     }
-
     &:focus-visible {
         outline: 2px solid ${({ theme }) => theme.colors.tech};
         outline-offset: 3px;
+    }
+    &:disabled {
+        color: ${({ theme }) => theme.colors.textMuted};
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+    &:disabled:hover{
+        color: ${({ theme }) => theme.colors.textMuted};
     }
 `;
 

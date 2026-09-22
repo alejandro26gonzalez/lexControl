@@ -1,18 +1,22 @@
 from app import db
 
-class Role(db.Model):
-    __tablename__= "roles"
-    
+
+class Permission(db.Model):
+    __tablename__ = "permissions"
+
     id = db.Column(
         db.Integer,
         primary_key=True
     )
-    
+
     name = db.Column(
-        db.String(30),
+        db.String(100),
         unique=True,
         nullable=False,
         index=True
     )
-    
-    
+
+    description = db.Column(
+        db.String(255),
+        nullable=True
+    )

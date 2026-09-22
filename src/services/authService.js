@@ -32,12 +32,18 @@ export async function forgotPassword(email) {
 }
 
 export async function verifyOTP(otp) {
-    return apiRequest("/auth/verify-otp", {
+    return apiRequest("/auth/forgot-password/verify-otp", {
         method: "POST",
         body: JSON.stringify({
             otp,
         }),
     });
+}
+
+export async function resendOTP() {
+    return  apiRequest("/auth/forgot-password/resend-otp", {
+        method: "POST",
+    })
 }
 
 export async function resetPassword(
@@ -53,3 +59,61 @@ export async function resetPassword(
     })
 }
 
+export async function register(
+    name,
+    lastName,
+    email,
+    password,
+    confirmPassword
+){
+    return apiRequest("/auth/register", {
+        method: "POST",
+        body: JSON.stringify({
+            name,
+            last_name: lastName,
+            email,
+            password,
+            confirm_password: confirmPassword
+        })
+    })
+}
+
+export async function registerProfile(
+    phone,
+    city,
+    position,
+    specialty,
+    professionalCard
+) {
+    return apiRequest("/auth/register/profile", {
+        method: "POST",
+        body: JSON.stringify({
+            phone,
+            city,
+            position,
+            specialty,
+            professional_card: professionalCard
+        })
+    })
+}
+
+export async function verifyRegistrationOTP(otp) {
+    return apiRequest("/auth/register/verify-otp", {
+        method: "POST",
+        body: JSON.stringify({
+            otp
+        })
+    })
+}
+
+export async function resendRegistrationOTP() {
+    return apiRequest("/auth/register/resend-otp",{
+        method: "POST",
+    })
+}
+
+export async function completeRegistration(){
+    return apiRequest("/auth/register/complete", {
+        method: "POST",
+    })
+}

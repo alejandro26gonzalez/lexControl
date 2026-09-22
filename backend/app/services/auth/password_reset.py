@@ -11,7 +11,7 @@ from app.helpers import (
 )
 
 OTP_EXPIRATION_MINUTES = 5
-MAX_OTP_ATTEMPTS = 5
+MAX_OTP_ATTEMPTS = 3
 
 """
 Invalidador de todos los OTP activos anteriores del usuario.
@@ -85,7 +85,9 @@ def validate_password_reset_otp_record(user_id, otp):
     if not otp_record:
         return (
             False, 
-            None, 
+            None,
+            0,
+            False, 
             "OTP inválido o expirado."
             )
     
@@ -96,21 +98,31 @@ def validate_password_reset_otp_record(user_id, otp):
     ): 
         otp_record.attempts += 1
         
+        remaining_attempts = (
+            MAX_OTP_ATTEMPTS - otp_record.attempts
+        )
+        
         if otp_record.attempts >= MAX_OTP_ATTEMPTS:
             return (
                 False, 
                 otp_record, 
+                0,
+                True,
                 "Número máximo de intentos alcanzados"
                 )
         
         return (
             False, 
             otp_record, 
+            remaining_attempts,
+            False,
             "OTP incorrecto."
             )
     
     return (
         True, 
         otp_record, 
+        MAX_OTP_ATTEMPTS - otp_record.attempts,
+        False,
         "OTP validado correctamente."
         )

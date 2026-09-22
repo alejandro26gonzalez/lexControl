@@ -104,6 +104,8 @@ def login_required(function):
             
         return function(*args, **kwargs)
     
+    
+    
     return decorated_function
 
 #protector de una ruta segun los roles actuales almacenados en la BD

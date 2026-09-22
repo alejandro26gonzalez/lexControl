@@ -47,3 +47,20 @@ class PasswordRecoverySession(db.Model):
         db.DateTime(timezone=True),
         nullable=True
     )
+    
+    otp_requests_count = db.Column(
+        db.Integer,
+        nullable=False,
+        default=1
+    )
+
+    failed_otp_count = db.Column(
+        db.Integer,
+        nullable=False,
+        default=0
+    )
+    
+    blocked_at = db.Column(
+        db.DateTime(timezone=True),
+        nullable=True
+    )

@@ -5,6 +5,35 @@ MAX_PASSWORD_LENGTH = 20
 
 ALLOWED_SPECIAL_CHARACTERS = r"#$%&/¡!?¿*+\-_.:"
 
+def _has_numeric_sequence(password, sequence_length=4):
+    numeric_groups = re.findall(r"\d+", password)
+
+    for group in numeric_groups:
+        if len(group) < sequence_length:
+            continue
+
+        for i in range(len(group) - sequence_length + 1):
+            sequence = group[i:i + sequence_length]
+
+            ascending = all(
+                int(sequence[j]) + 1 == int(sequence[j + 1])
+                for j in range(len(sequence) - 1)
+            )
+
+            descending = all(
+                int(sequence[j]) - 1 == int(sequence[j + 1])
+                for j in range(len(sequence) - 1)
+            )
+
+            repeated = all(
+                sequence[j] == sequence[j + 1]
+                for j in range(len(sequence) - 1)
+            )
+
+            if ascending or descending or repeated:
+                return True
+
+    return False
 
 def validate_password(password, user_email=None):
     """
@@ -72,9 +101,9 @@ def validate_password(password, user_email=None):
         )
 
     # Máximo de 3 números consecutivos
-    if re.search(r"\d{4,}", password):
+    if _has_numeric_sequence(password):
         errors.append(
-            "No puede contener más de 3 números consecutivos."
+            "La contraseña no puede contener secuencias numéricas predecibles."
         )
 
     # No contener identificador del usuario

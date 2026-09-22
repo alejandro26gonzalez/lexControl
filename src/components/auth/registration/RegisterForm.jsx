@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { FiArrowLeft, FiEye, FiEyeOff } from 'react-icons/fi';
 import { NavLink } from 'react-router-dom';
+import FeedbackAlert from "../../feedbackAlert/FeedbackAlert";
+import useFeedbackAlert from "../../../hooks/useFeedbackAlert.js";
 
 import SocialButtons from '../socialButtons/SocialButtons';
 
@@ -45,6 +47,14 @@ import {
     SuccessDescription
 } from '../../../styles/auth/registration/registrationForm.styles';
 
+import {
+    register,
+    registerProfile,
+    verifyRegistrationOTP,
+    resendRegistrationOTP,
+    completeRegistration
+} from "../../../services/authService.js";
+
 const RegisterForm = () => {
     const [currentStep, setCurrentStep] = useState(1);
 
@@ -53,6 +63,7 @@ const RegisterForm = () => {
 
     const [basicData, setBasicData] = useState({
         name: '',
+        lastName: '',
         email: '',
         password: '',
         confirmPassword: '',
@@ -67,8 +78,15 @@ const RegisterForm = () => {
     });
 
     const [verificationCode, setVerificationCode] = useState('');
-
     const [isAccountCreated, setIsAccountCreated] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const {
+        feedbackAlert,
+        showFeedback,
+        clearFeedback,
+    } = useFeedbackAlert();
+
 
     const handleBasicChange = (event) => {
         const { name, value } = event.target;
@@ -88,34 +106,76 @@ const RegisterForm = () => {
         }));
     };
 
-    const handleContinueToProfile = (event) => {
+    const handleContinueToProfile = async (event) => {
         event.preventDefault();
 
-        // Por ahora solamente avanzamos.
-        // Posteriormente aquí irá la validación del paso 1.
+        setIsLoading(true);
+        clearFeedback();
 
-        setCurrentStep(2);
+        try {
+            await register(
+                basicData.name,
+                basicData.lastName,
+                basicData.email,
+                basicData.password,
+                basicData.confirmPassword
+            );
+
+            showFeedback("registerBasicDataSuccess");
+            setCurrentStep(2);
+        } catch (error) {
+            showFeedback("registerBasicError")
+        } finally {
+            setIsLoading(false);
+        }
+
     };
 
-    const handleContinueToConfirmation = (event) => {
+    const handleContinueToConfirmation = async (event) => {
         event.preventDefault();
 
-        // Posteriormente:
-        // 1. Enviar información al backend.
-        // 2. Crear registro pendiente.
-        // 3. Generar código.
-        // 4. Enviar código al correo.
+        clearFeedback();
+        setIsLoading(true);
 
-        setCurrentStep(3);
+        try {
+            await registerProfile(
+                profileData.phone,
+                profileData.city,
+                profileData.position,
+                profileData.specialty,
+                profileData.professionalCard
+            );
+
+            setCurrentStep(3);
+        } catch (error) {
+            showFeedback("registerProfileError");
+        } finally {
+            setIsLoading(false);
+        }
+
     };
 
-    const handleConfirmAccount = (event) => {
+    const handleConfirmAccount = async (event) => {
         event.preventDefault();
 
-        // Posteriormente:
-        // Validar verificationCode contra backend.
+        clearFeedback();
+        setIsLoading(true);
 
-        setIsAccountCreated(true);
+        try {
+            await verifyRegistrationOTP(
+                verificationCode
+            );
+
+            await completeRegistration();
+
+            showFeedback("registerSuccess");
+            setIsAccountCreated(true);
+        } catch (error) {
+            showFeedback("registerOtpValidationError");
+        } finally {
+            setIsLoading(false);
+        }
+
     };
 
     const handleBackToBasic = () => {
@@ -126,8 +186,30 @@ const RegisterForm = () => {
         setCurrentStep(2);
     };
 
+    const handleResendRegistrationOTP = async () => {
+        clearFeedback();
+        setIsLoading(true);
+
+        try {
+            await resendRegistrationOTP();
+
+            showFeedback("registerOtpResent");
+        } catch (error) {
+            showFeedback("registerOtpValidationError");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <FormContainer>
+
+            {feedbackAlert && (
+                <FeedbackAlert
+                    config={feedbackAlert}
+                    onClose={clearFeedback}
+                />
+            )}
 
             {/* boton ir a inicio */}
             <BackLink as={NavLink} to="/">
@@ -222,15 +304,30 @@ const RegisterForm = () => {
                                 <FieldsGrid>
                                     <FieldGroup>
                                         <FieldLabel htmlFor="register-name">
-                                            Nombre completo
+                                            Nombres
                                         </FieldLabel>
 
                                         <FieldInput
                                             id="register-name"
                                             name="name"
                                             type="text"
-                                            placeholder="Ingresa tu nombre completo..."
+                                            placeholder="Ingresa tu nombre..."
                                             value={basicData.name}
+                                            onChange={handleBasicChange}
+                                        />
+                                    </FieldGroup>
+
+                                    <FieldGroup>
+                                        <FieldLabel htmlFor="register-lastName">
+                                            Apellidos
+                                        </FieldLabel>
+
+                                        <FieldInput
+                                            id="register-lastName"
+                                            name="lastName"
+                                            type="text"
+                                            placeholder="Ingresa tus apellidos..."
+                                            value={basicData.lastName}
                                             onChange={handleBasicChange}
                                         />
                                     </FieldGroup>
@@ -345,19 +442,22 @@ const RegisterForm = () => {
 
                                     <TermsText htmlFor="terms">
                                         Acepto los{' '}
-                                        <TermsLink href="/terms">
+                                        <TermsLink href="/legal">
                                             Términos y Condiciones
                                         </TermsLink>{' '}
                                         y la{' '}
-                                        <TermsLink href="/privacy">
+                                        <TermsLink href="/legal">
                                             Política de Privacidad
                                         </TermsLink>{' '}
                                         de LexControl.
                                     </TermsText>
                                 </TermsContainer>
 
-                                <RegisterButton type="submit">
-                                    Continuar
+                                <RegisterButton 
+                                disabled={isLoading}
+                                type="submit"
+                                >
+                                    {isLoading ? 'Procesando...' : 'Continuar'}
                                 </RegisterButton>
                             </RegisterFormElement>
 
@@ -477,8 +577,11 @@ const RegisterForm = () => {
                                     Atrás
                                 </SecondaryButton>
 
-                                <RegisterButton type="submit">
-                                    Continuar
+                                <RegisterButton 
+                                disabled={isLoading}
+                                type="submit"
+                                >
+                                    {isLoading ? 'Guardando...' : 'Continuar'}
                                 </RegisterButton>
                             </StepActions>
                         </RegisterFormElement>
@@ -494,28 +597,41 @@ const RegisterForm = () => {
                                 </VerificationLabel>
 
                                 <VerificationInput
+                                    id="verification-code"
                                     type="text"
-                                    inputMode="numeric"
-                                    maxLength={6}
-                                    placeholder="000000"
+                                    inputMode="text"
+                                    maxLength={8}
+                                    placeholder="00000000"
                                     value={verificationCode}
                                     onChange={(event) =>
                                         setVerificationCode(
-                                            event.target.value.replace(
-                                                /\D/g,
-                                                ''
-                                            )
+                                            event.target.value.slice(0 , 8)
                                         )
                                     }
+                                    autoComplete='one-time-code'
+                                    required
                                 />
 
                                 <VerificationHelp>
-                                    Ingresa el código de 6 dígitos que
+                                    Ingresa el código de 8 caracteres que
                                     enviamos a tu correo electrónico.
                                 </VerificationHelp>
 
-                                <ResendButton type="button">
-                                    Reenviar código
+                                <ResendButton 
+                                type="button"
+                                onClick={async () => {
+                                    setIsLoading(true);
+
+                                    try {
+                                        await resendRegistrationOTP();
+                                    } catch (error) {
+                                    } finally {
+                                        setIsLoading(false);
+                                    }
+                                }}
+                                disabled={isLoading}
+                                >
+                                    {isLoading ? 'Procesando...' : 'Reenviar código'}
                                 </ResendButton>
                             </VerificationContainer>
 
@@ -527,8 +643,11 @@ const RegisterForm = () => {
                                     Atrás
                                 </SecondaryButton>
 
-                                <RegisterButton type="submit">
-                                    Confirmar cuenta
+                                <RegisterButton 
+                                disabled={isLoading}
+                                type="submit"
+                                >
+                                    {isLoading ? 'Verificando...' : 'Confirmar cuenta'}
                                 </RegisterButton>
                             </StepActions>
                         </RegisterFormElement>

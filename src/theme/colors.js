@@ -66,3 +66,33 @@ export const privateColors = {
     white: '#FFFFFF',
     black: '#000000',
 };
+
+export const feedback = {
+    info: {
+        background: "#E3F1FC",
+        border: "#B8DDF5",
+        text: "#285477",
+        icon: "#285477",
+    },
+
+    success: {
+        background: "#E3F3E8",
+        border: "#B8DFC4",
+        text: "#28613A",
+        icon: "#28613A",
+    },
+
+    warning: {
+        background: "#FFF3D6",
+        border: "#F2D99A",
+        text: "#80631C",
+        icon: "#80631C",
+    },
+
+    error: {
+        background: "#F9DDE1",
+        border: "#E9B9C1",
+        text: "#813A45",
+        icon: "#813A45",
+    },
+}

@@ -1,5 +1,7 @@
 import { useState } from "react";
 import SocialButtons from "../socialButtons/SocialButtons";
+import FeedbackAlert from "../../feedbackAlert/FeedbackAlert";
+import { FEEDBACK_ALERT_CONFIG } from "../../../config/components/feedback";
 
 import {
     Form,
@@ -21,14 +23,14 @@ const LoginForm = ({ login }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [feedback, setFeedback] = useState(null);
 
     async function handleSubmit(event) {
         event.preventDefault();
 
-        setError("");
         setIsLoading(true);
+        setFeedback(null);
 
         try {
             const response = await login(email, password);
@@ -37,12 +39,8 @@ const LoginForm = ({ login }) => {
 
         } catch (error) {
             console.error("LOGIN FORM → error:", error);
+            setFeedback(FEEDBACK_ALERT_CONFIG.loginError);
 
-            const message =
-                error?.data?.error ||
-                "No fue posible iniciar sesión.";
-
-            setError(message);
         } finally {
             setIsLoading(false);
         }
@@ -94,10 +92,11 @@ const LoginForm = ({ login }) => {
                 </PasswordContainer>
             </Field>
 
-            {error && (
-                <div role="alert">
-                    {error}
-                </div>
+            {feedback && (
+                <FeedbackAlert 
+                config={feedback}
+                onClose={() => setFeedback(null)}
+                />
             )}
 
             <RegisterRow>
