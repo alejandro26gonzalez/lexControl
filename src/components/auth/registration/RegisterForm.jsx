@@ -113,7 +113,8 @@ const RegisterForm = () => {
         clearFeedback();
 
         try {
-            await register(
+
+            const response = await register(
                 basicData.name,
                 basicData.lastName,
                 basicData.email,
@@ -121,10 +122,13 @@ const RegisterForm = () => {
                 basicData.confirmPassword
             );
 
-            showFeedback("registerBasicDataSuccess");
+            showFeedback(response.code);
             setCurrentStep(2);
+
         } catch (error) {
-            showFeedback("registerBasicError")
+
+            showFeedback(error?.data?.code)
+
         } finally {
             setIsLoading(false);
         }
@@ -138,7 +142,7 @@ const RegisterForm = () => {
         setIsLoading(true);
 
         try {
-            await registerProfile(
+            const response = await registerProfile(
                 profileData.phone,
                 profileData.city,
                 profileData.position,
@@ -146,9 +150,14 @@ const RegisterForm = () => {
                 profileData.professionalCard
             );
 
+
+            showFeedback(response.code);
             setCurrentStep(3);
+
         } catch (error) {
-            showFeedback("registerProfileError");
+
+            showFeedback(error?.data?.code);
+            
         } finally {
             setIsLoading(false);
         }
@@ -162,16 +171,18 @@ const RegisterForm = () => {
         setIsLoading(true);
 
         try {
-            await verifyRegistrationOTP(
+            const response = await verifyRegistrationOTP(
                 verificationCode
             );
 
-            await completeRegistration();
+            const completion = await completeRegistration();
 
-            showFeedback("registerSuccess");
+            showFeedback(response.code);
             setIsAccountCreated(true);
         } catch (error) {
-            showFeedback("registerOtpValidationError");
+
+            showFeedback(error?.data?.code);
+
         } finally {
             setIsLoading(false);
         }
@@ -191,11 +202,11 @@ const RegisterForm = () => {
         setIsLoading(true);
 
         try {
-            await resendRegistrationOTP();
+            const response = await resendRegistrationOTP();
 
-            showFeedback("registerOtpResent");
+            showFeedback(response.code);
         } catch (error) {
-            showFeedback("registerOtpValidationError");
+            showFeedback(error?.data?.code);
         } finally {
             setIsLoading(false);
         }
@@ -617,19 +628,10 @@ const RegisterForm = () => {
                                     enviamos a tu correo electrónico.
                                 </VerificationHelp>
 
-                                <ResendButton 
-                                type="button"
-                                onClick={async () => {
-                                    setIsLoading(true);
-
-                                    try {
-                                        await resendRegistrationOTP();
-                                    } catch (error) {
-                                    } finally {
-                                        setIsLoading(false);
-                                    }
-                                }}
-                                disabled={isLoading}
+                                <ResendButton
+                                    type="button"
+                                    onClick={handleResendRegistrationOTP}
+                                    disabled={isLoading}
                                 >
                                     {isLoading ? 'Procesando...' : 'Reenviar código'}
                                 </ResendButton>

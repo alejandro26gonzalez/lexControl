@@ -1,7 +1,7 @@
 import { useState } from "react";
 import SocialButtons from "../socialButtons/SocialButtons";
 import FeedbackAlert from "../../feedbackAlert/FeedbackAlert";
-import { FEEDBACK_ALERT_CONFIG } from "../../../config/components/feedback";
+import useFeedbackAlert from "../../../hooks/useFeedbackAlert";
 
 import {
     Form,
@@ -24,22 +24,27 @@ const LoginForm = ({ login }) => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [feedback, setFeedback] = useState(null);
+
+    const {
+        feedbackAlert,
+        showFeedback,
+        clearFeedback
+    } = useFeedbackAlert();
 
     async function handleSubmit(event) {
         event.preventDefault();
 
         setIsLoading(true);
-        setFeedback(null);
+        clearFeedback();
 
         try {
             const response = await login(email, password);
 
-            console.log("LOGIN FORM → login exitoso:", response);
+            showFeedback(response.code)
 
         } catch (error) {
-            console.error("LOGIN FORM → error:", error);
-            setFeedback(FEEDBACK_ALERT_CONFIG.loginError);
+            
+            showFeedback(error?.data?.code)
 
         } finally {
             setIsLoading(false);
@@ -92,10 +97,10 @@ const LoginForm = ({ login }) => {
                 </PasswordContainer>
             </Field>
 
-            {feedback && (
+            {feedbackAlert && (
                 <FeedbackAlert 
-                config={feedback}
-                onClose={() => setFeedback(null)}
+                config={feedbackAlert}
+                onClose={clearFeedback}
                 />
             )}
 

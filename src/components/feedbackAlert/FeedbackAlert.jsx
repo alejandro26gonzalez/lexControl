@@ -22,6 +22,8 @@ const FeedbackAlert = ({ config, onClose }) => {
     const [isExiting, setIsExiting] = useState(false);
 
     useEffect(() => {
+        if (!config) return;
+
         const exitTimer = setTimeout(() => {
             setIsExiting(true);
         }, ALERT_DURATION);
@@ -29,7 +31,7 @@ const FeedbackAlert = ({ config, onClose }) => {
         return () => {
             clearTimeout(exitTimer);
         };
-    }, []);
+    }, [config]);
 
     useEffect(() => {
         if (!isExiting) return;
@@ -42,6 +44,10 @@ const FeedbackAlert = ({ config, onClose }) => {
             clearTimeout(closeTimer);
         };
     }, [isExiting, onClose]);
+
+    if (!config) {
+        return null;
+    }
 
     return (
         <FeedbackAlertContainer 

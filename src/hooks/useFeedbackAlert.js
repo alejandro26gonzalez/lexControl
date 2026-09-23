@@ -4,17 +4,21 @@ import { FEEDBACK_ALERT_CONFIG } from "../config/components/feedback";
 const useFeedbackAlert = () => {
     const [feedbackAlert, setFeedbackAlert] = useState(null);
 
-    const showFeedback = useCallback((configKey) => {
-        const config = FEEDBACK_ALERT_CONFIG[configKey];
+    const showFeedback = useCallback((code) => {
+
+        const config = FEEDBACK_ALERT_CONFIG[code];
 
         if (!config) {
             console.warn(
-                `FeedbackAlert config "${configKey}" no existe.`
+                `FeedbackAlert config "${code}" no existe.`
             );
+
+            setFeedbackAlert(FEEDBACK_ALERT_CONFIG.UNKNOWN_ERROR);
             return;
         }
 
         setFeedbackAlert(config);
+
     }, []);
 
     const showCustomFeedback = useCallback((config) => {

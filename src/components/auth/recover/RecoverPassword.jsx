@@ -31,7 +31,7 @@ import {
 } from "../../../styles/auth/registration/registrationForm.styles";
 
 import FeedbackAlert from "../../feedbackAlert/FeedbackAlert";
-import { FEEDBACK_ALERT_CONFIG } from '../../../config/components/feedback';
+import useFeedbackAlert from '../../../hooks/useFeedbackAlert';
 
 import { 
     forgotPassword,
@@ -55,7 +55,11 @@ const RecoverPassword = () => {
     const [otpTimeRemaining, setOtpTimeRemaining] = useState(300);
     const [resendTimeRemaining, setResendTimeRemaining] = useState(60);
 
-    const [feedback, setFeedback] = useState(null);
+    const {
+        showFeedback,
+        clearFeedback,
+        feedbackAlert
+    } = useFeedbackAlert();
 
     // importante: generar el back para el contador de reenviar el codigo nuevamente
 
@@ -94,12 +98,12 @@ const RecoverPassword = () => {
     const handleEmailSubmit = async (event) => {
         event.preventDefault();
 
-        try {
-            await forgotPassword(email);
+        clearFeedback();
 
-            setFeedback(
-                FEEDBACK_ALERT_CONFIG.forgotPasswordRequested
-            );
+        try {
+            const response = await forgotPassword(email);
+
+            showFeedback(response.code);
 
             setVerificationCode("");
             setOtpTimeRemaining(300);
@@ -112,85 +116,53 @@ const RecoverPassword = () => {
                 error
             );
 
-            setFeedback({
-                variant: "error",
-                icon: FEEDBACK_ALERT_CONFIG.otpExpired.icon,
-                title: "No fue posible solicitar el código",
-                description:
-                    error?.data?.error ||
-                    "Ocurrió un error al iniciar la recuperación.",
-            });
+            showFeedback(error?.data?.code || "UNKNOWN_ERROR");
         }
     };
 
     const handleCodeSubmit = async (event) => {
         event.preventDefault();
 
-        try {
-            await verifyOTP(verificationCode);
+        clearFeedback();
 
-            setFeedback(
-                FEEDBACK_ALERT_CONFIG.otpValidated
-            );
+        try {
+            const response = await verifyOTP(verificationCode);
+
+            showFeedback(response.code);
 
             setCurrentStep(3);
+
         } catch (error) {
-            console.log("Error validando OTP:", error);
+            console.error(
+                "Error validando OTP:",
+                error
+            );
 
             const data = error?.data;
 
-            const message = data?.error;
-            const remainingAttempts = data?.remaining_attempts;
-            const otpExhausted = data?.otp_exhausted;
-            const sessionBlocked = data?.session_blocked;
+            const code = data?.code;
 
-            if (sessionBlocked) {
-                setFeedback(
-                    FEEDBACK_ALERT_CONFIG.recoverySessionBlocked
-                );
-                return;
-            };
-
-            if (otpExhausted) {
-                setFeedback(
-                    FEEDBACK_ALERT_CONFIG.otpMaxAttempts
-                );
-                return;
-            };
-
-            if (message === "OTP inválido o expirado.") {
-                setFeedback(
-                    FEEDBACK_ALERT_CONFIG.otpExpired
-                );
-                return;
-            };
-
-            if (remainingAttempts !== undefined) {
-                setFeedback({
-                    ...FEEDBACK_ALERT_CONFIG.otpAttemptsWarning,
-                    description:
-                    `El código ingresado no es correcto. Te quedan ${remainingAttempts} intentos.`,
-                });
+            if (!code) {
+                showFeedback("UNKNOWN_ERROR");
                 return;
             }
 
-            setFeedback({
-                variant: "error",
-                icon: FEEDBACK_ALERT_CONFIG.otpExpired.icon,
-                title: "No fue posible validar el código",
-                description: message || "Ocurrió un error al validar el código.",
-            });
-        };
+            showFeedback(code);
+        }
     };
 
     const handlePasswordSubmit = async (event) => {
         event.preventDefault();
 
+        clearFeedback();
+
         try {
-            await resetPassword(
+            const response = await resetPassword(
                 password,
                 confirmPassword
             );
+
+            showFeedback(response.code);
 
             setCurrentStep(4);
 
@@ -200,12 +172,7 @@ const RecoverPassword = () => {
                 error
             );
 
-            setFeedback({
-                ...FEEDBACK_ALERT_CONFIG.passwordResetError,
-                description:
-                    error?.data?.error ||
-                    FEEDBACK_ALERT_CONFIG.passwordResetError.description,
-            });
+            showFeedback(error?.data?.code || "UNKNOWN_ERROR");
         }
     };
 
@@ -216,44 +183,24 @@ const RecoverPassword = () => {
     const handleResendOTP = async () => {
         if (resendTimeRemaining > 0) return;
 
+        clearFeedback();
+
         try {
-            await resendOTP();
+            const response = await resendOTP();
 
             setVerificationCode("");
             setOtpTimeRemaining(300);
             setResendTimeRemaining(60);
 
-            setFeedback(
-                FEEDBACK_ALERT_CONFIG.otpResent
-            );
+            showFeedback(response.code);
 
         } catch (error) {
-            console.error("Error al reenviar OTP:", error);
+            console.error(
+                "Error al reenviar OTP:",
+                error
+            );
 
-            const data = error?.data;
-
-            if (data?.otp_request_limit_reached) {
-                setFeedback(
-                    FEEDBACK_ALERT_CONFIG.otpRequestLimitReached
-                );
-                return;
-            }
-
-            if (data?.session_blocked) {
-                setFeedback(
-                    FEEDBACK_ALERT_CONFIG.recoverySessionBlocked
-                );
-                return;
-            }
-
-            setFeedback({
-                variant: "error",
-                icon: FEEDBACK_ALERT_CONFIG.otpExpired.icon,
-                title: "No fue posible reenviar el código",
-                description:
-                    error?.data?.error ||
-                    "Ocurrió un error al solicitar un nuevo código.",
-            });
+            showFeedback(error?.data?.code || "UNKNOWN_ERROR");
         }
     };
 
@@ -306,10 +253,10 @@ const RecoverPassword = () => {
 
     return (
         <>
-            {feedback && (
+            {feedbackAlert && (
                 <FeedbackAlert
-                    config={feedback}
-                    onClose={() => setFeedback(null)}
+                    config={feedbackAlert}
+                    onClose={clearFeedback}
                 />
             )}
 
