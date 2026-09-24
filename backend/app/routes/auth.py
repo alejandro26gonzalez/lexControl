@@ -1,4 +1,5 @@
 import json
+import string
 
 from flask import Blueprint, jsonify, request, session, current_app
 from datetime import datetime, timezone, timedelta
@@ -136,7 +137,7 @@ def login():
     
     return auth_success(
         "Autenticación exitosa.",
-        "AUTH_LOGIN_OK",
+        "AUTH_LOGIN_SUCCESS",
         user={
             "id": user.id,
             "email": user.email,
@@ -158,16 +159,10 @@ def get_me():
         
     roles = get_user_roles(user.id)
     
-    return auth_success(
-        "Sesión autenticada correctamente.",
-        "AUTH_CURRENT_USER",
-        user={
-            "id": user.id,
-            "email": user.email,
-            "roles": roles
-        },
-        authenticated=True
-    )
+    return jsonify({
+        "message": "Sesión autenticada correctamente",
+        "authenticated": True
+    })
     
 @auth_bp.route("/logout", methods=["POST"])
 def logout():
@@ -186,7 +181,7 @@ def logout():
     
     return auth_success(
         "Sesión cerrada correctamente",
-        "AUTH_LOGOUT_OK"
+        "AUTH_LOGOUT_SUCCESS"
     )
 
 @auth_bp.route("/forgot-password/verify-otp", methods=["POST"])
@@ -381,7 +376,7 @@ def reset_password():
 
         return auth_error(
             "No fue posible actualizar la contraseña.",
-            "RECOVERY_REQUEST_FAILED",
+            "PASSWORD_RESET_FAILED",
             500
         )
         
@@ -818,7 +813,7 @@ def verify_registration_otp():
     if not otp:
         return auth_error(
             "El código de verificación es obligatorio.",
-            "AUTH_DATA_REQUIRED",
+            "OTP_REQUIRED",
             400
         )
 
@@ -893,7 +888,7 @@ def verify_registration_otp():
 
         return auth_success(
             "Correo electrónico verificado correctamente.",
-            "EMAIL_VERIFIED",
+            "OTP_VERIFIED",
             200
         )
 
@@ -935,7 +930,7 @@ def resend_registration_otp():
         if not registration_session:
             return auth_error(
                     "Reenvío de OTP no completado por sesión inválida o expirada.",
-                    "AUTH_SESSION_INVALID",
+                    "REGISTRATION_SESSION_INVALID",
                     400
                 )
 
@@ -1101,7 +1096,7 @@ def complete_registration():
 
         response, status = auth_success(
                     "Cuenta creada exitosamente.",
-                    "REGISTRATION_COMPLETE"
+                    "REGISTRATION_COMPLETED"
                 )
 
         response.delete_cookie(

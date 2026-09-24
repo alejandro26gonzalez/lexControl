@@ -299,6 +299,14 @@ export const FEEDBACK_ALERT_CONFIG = {
             "Ocurrió un error al guardar la información del perfil."
     },
 
+    EMAIL_ALREADY_VERIFIED: {
+        variant: "info",
+        icon: FiInfo,
+        title: "Correo ya verificado",
+        description:
+            "El correo electrónico asociado a este registro ya fue verificado."
+    },
+
 
     // ==========================================
     // FALLBACK
