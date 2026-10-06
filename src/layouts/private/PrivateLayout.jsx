@@ -3,6 +3,7 @@ import useResetScrollPosition from "../../hooks/useResetScrollPosition";
 import {privateTheme} from "../../theme/privateTheme";
 import styled, { ThemeProvider } from "styled-components";
 import ScrollToTopButton from "../../components/scrollToTopButton/ScrollToTopButton";
+import SessionManager from "../../components/auth/sessionManager/SessionManager"
 
 const PrivateLayout = () => {
     useResetScrollPosition();
@@ -10,6 +11,8 @@ const PrivateLayout = () => {
     return (
         <ThemeProvider theme={privateTheme}>
             <PrivateLayoutContainer>
+
+                <SessionManager />
 
                 <Main>
                     <Outlet />

@@ -15,11 +15,18 @@ def get_user_by_email(email):
         email=email
     ).first()
 
-
+def get_user_by_id(user_id):
+    return db.session.get(
+        User,
+        user_id
+    )
+    
 def create_user(
     email,
     password_hash,
-    is_active=True
+    identification_type,
+    identification_number,
+    is_active=True,
 ):
     email = normalize_email(email)
 
@@ -33,6 +40,8 @@ def create_user(
     user = User(
         email=email,
         password_hash=password_hash,
+        identification_type=identification_type,
+        identification_number=identification_number,
         is_active=is_active
     )
 
@@ -79,6 +88,8 @@ def create_user_account(
     user = create_user(
         email=email,
         password_hash=password_hash,
+        identification_type=profile_data["identification_type"],
+        identification_number=profile_data["identification_number"],
         is_active=is_active
     )
 

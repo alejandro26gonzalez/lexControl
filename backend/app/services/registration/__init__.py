@@ -6,7 +6,8 @@ from .registration import (
     complete_registration_session,
     finalize_registration,
     get_active_registration_session_by_email,
-    update_registration_profile
+    update_registration_profile,
+    resume_registration_session
 )
 
 from .registration_otp import (

@@ -9,6 +9,7 @@ from app.models.user.user_profile import UserProfile
 from app.models.auth.session import Session
 from app.models.auth.password_recovery_session import PasswordRecoverySession
 from app.models.auth.password_reset_otp import PasswordResetOTP
+from app.models.auth.auth_identity import AuthIdentity
 
 from app.models.registration.registration_otp import RegistrationOTP
 from app.models.registration.registration_session import RegistrationSession

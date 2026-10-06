@@ -31,6 +31,16 @@ class RegistrationSession(db.Model):
         db.String(150),
         nullable=True
     )
+    
+    identification_type = db.Column(
+        db.String(50),
+        nullable=False
+    )
+    
+    identification_number = db.Column(
+        db.String(50),
+        nullable=False
+    )
 
     phone = db.Column(
         db.String(50),

@@ -1,0 +1,105 @@
+{% extends "email/base.html" %}
+
+{% block content %}
+
+<p style="
+    margin: 0 0 8px 0;
+    font-size: 13px;
+    line-height: 20px;
+    color: #B69A6A;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+">
+    Verificación de cuenta
+</p>
+
+<h1 style="
+    margin: 0 0 20px 0;
+    font-size: 26px;
+    line-height: 34px;
+    color: #08111B;
+    font-weight: 700;
+">
+    Confirma tu correo electrónico
+</h1>
+
+<p style="
+    margin: 0 0 16px 0;
+    font-size: 15px;
+    line-height: 24px;
+    color: #374151;
+">
+    Hola{% if name %} {{ name }}{% endif %},
+</p>
+
+<p style="
+    margin: 0 0 24px 0;
+    font-size: 15px;
+    line-height: 24px;
+    color: #374151;
+">
+    Hemos recibido una solicitud para crear una cuenta
+    en LexControl. Utiliza el siguiente código para
+    confirmar tu correo electrónico:
+</p>
+
+<table
+    role="presentation"
+    width="100%"
+    cellpadding="0"
+    cellspacing="0"
+    border="0"
+    style="margin: 0 0 24px 0;"
+>
+    <tr>
+        <td align="center">
+
+            <div style="
+                display: inline-block;
+                background-color: #F7F8F9;
+                border: 1px solid #E6E8EB;
+                border-radius: 10px;
+                padding: 18px 28px;
+            ">
+                <span style="
+                    font-size: 30px;
+                    line-height: 36px;
+                    font-weight: 700;
+                    letter-spacing: 6px;
+                    color: #08111B;
+                ">
+                    {{ otp }}
+                </span>
+            </div>
+
+        </td>
+    </tr>
+</table>
+
+<p style="
+    margin: 0 0 8px 0;
+    font-size: 13px;
+    line-height: 20px;
+    color: #6B7280;
+    text-align: center;
+">
+    Este código es válido durante
+    <strong style="color: #08111B;">
+        {{ expiration_minutes }} minutos
+    </strong>.
+</p>
+
+<p style="
+    margin: 28px 0 0 0;
+    padding-top: 20px;
+    border-top: 1px solid #E6E8EB;
+    font-size: 12px;
+    line-height: 19px;
+    color: #6B7280;
+">
+    Si no solicitaste crear una cuenta en LexControl,
+    puedes ignorar este mensaje.
+</p>
+
+{% endblock %}

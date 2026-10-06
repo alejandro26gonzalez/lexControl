@@ -50,6 +50,30 @@ class User(db.Model):
         cascade="all, delete-orphan"
     )
     
+    identification_type = db.Column(
+        db.String(50),
+        nullable=False
+    )
+        
+    identification_number = db.Column(
+        db.String(50),
+        nullable=False,
+    )
+    
+    auth_identities = db.relationship(
+        "AuthIdentity",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+
+    __table_args__ = (
+        db.UniqueConstraint(
+            "identification_type",
+            "identification_number",
+            name="uq_user_identification"
+        ),
+    )
+    
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
         

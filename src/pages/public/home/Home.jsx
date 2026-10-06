@@ -2,7 +2,7 @@ import { homeConfig } from "../../../config/pages/home";
 import Container from "../../../components/container/Container";
 import Hero from "../../../components/hero/Hero";
 import GlobalContainer from "../../../styles/GlobalContainer";
-import SpecialtiesPreview from "./components/SpecialtiesPreview ";
+import SpecialtiesPreview from "./components/SpecialtiesPreview";
 import ApproachSection from "./components/ApproachSection";
 import ContentSplit from "../../../components/contentSplit/ContentSplit";
 import Banner from "../../../components/banner/Banner";

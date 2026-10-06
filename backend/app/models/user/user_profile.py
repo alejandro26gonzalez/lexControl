@@ -21,7 +21,7 @@ class UserProfile(db.Model):
         nullable=False,
         index=True
     )
-
+    
     name = db.Column(
         db.String(150),
         nullable=False
@@ -69,3 +69,4 @@ class UserProfile(db.Model):
         onupdate=lambda: datetime.now(timezone.utc),
         nullable=False
     )
+    

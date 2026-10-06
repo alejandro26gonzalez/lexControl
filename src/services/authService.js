@@ -1,11 +1,12 @@
 import { apiRequest } from "./api";
 
-export async function login(email, password) {   
+export async function login(email, password, remember_me) {   
     return apiRequest("/auth/login",{
         method: "POST",
         body: JSON.stringify({
             email,
             password,
+            remember_me
         }),
     });
 }
@@ -50,7 +51,7 @@ export async function resetPassword(
     newPassword,
     confirmPassword
 ) {
-    return apiRequest("/auth/reset-password", {
+    return apiRequest("/auth/forgot-password/reset-password", {
         method: "POST",
         body: JSON.stringify({
             new_password: newPassword,
@@ -62,6 +63,8 @@ export async function resetPassword(
 export async function register(
     name,
     lastName,
+    identification_type,
+    identification_number,
     email,
     password,
     confirmPassword
@@ -71,6 +74,8 @@ export async function register(
         body: JSON.stringify({
             name,
             last_name: lastName,
+            identification_type,
+            identification_number,
             email,
             password,
             confirm_password: confirmPassword
@@ -96,6 +101,7 @@ export async function registerProfile(
         })
     })
 }
+
 
 export async function verifyRegistrationOTP(otp) {
     return apiRequest("/auth/register/verify-otp", {

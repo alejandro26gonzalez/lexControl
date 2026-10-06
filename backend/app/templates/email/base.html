@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ subject }}</title>
+</head>
+
+<body style="
+    margin: 0;
+    padding: 0;
+    background-color: #F7F8F9;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #08111B;
+">
+
+    <table
+        role="presentation"
+        width="100%"
+        cellpadding="0"
+        cellspacing="0"
+        border="0"
+        style="
+            width: 100%;
+            background-color: #F7F8F9;
+            margin: 0;
+            padding: 32px 16px;
+        "
+    >
+        <tr>
+            <td align="center">
+
+                <table
+                    role="presentation"
+                    width="100%"
+                    cellpadding="0"
+                    cellspacing="0"
+                    border="0"
+                    style="
+                        max-width: 560px;
+                        width: 100%;
+                        background-color: #FFFFFF;
+                        border-radius: 12px;
+                        overflow: hidden;
+                    "
+                >
+
+                    <!-- Header -->
+                    <tr>
+                        <td
+                            align="center"
+                            style="
+                                background-color: #08111B;
+                                padding: 28px 24px;
+                            "
+                        >
+                            <img
+                                src="{{ logo_url }}"
+                                alt="LexControl"
+                                width="150"
+                                style="
+                                    display: block;
+                                    width: 150px;
+                                    max-width: 100%;
+                                    height: auto;
+                                    border: 0;
+                                "
+                            >
+                        </td>
+                    </tr>
+
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 40px 36px;">
+
+                            {% block content %}
+                            {% endblock %}
+
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td
+                            align="center"
+                            style="
+                                background-color: #F7F8F9;
+                                padding: 24px 20px;
+                                border-top: 1px solid #E6E8EB;
+                            "
+                        >
+
+                            <p style="
+                                margin: 0 0 8px 0;
+                                font-size: 12px;
+                                line-height: 18px;
+                                color: #08111B;
+                                font-weight: 600;
+                            ">
+                                LEXCONTROL
+                            </p>
+
+                            <p style="
+                                margin: 0;
+                                font-size: 11px;
+                                line-height: 17px;
+                                color: #6B7280;
+                            ">
+                                Este es un correo automático.
+                                Por favor, no respondas a este mensaje.
+                            </p>
+
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+
+</html>

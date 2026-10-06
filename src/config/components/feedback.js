@@ -216,7 +216,7 @@ export const FEEDBACK_ALERT_CONFIG = {
         icon: FiInfo,
         title: "Registro en curso",
         description:
-            "Ya existe un proceso de registro activo para este correo electrónico."
+            "Ya existe un proceso de registro activo para este correo electrónico, continúa donde quedaste."
     },
 
     EMAIL_ALREADY_REGISTERED: {
@@ -307,6 +307,14 @@ export const FEEDBACK_ALERT_CONFIG = {
             "El correo electrónico asociado a este registro ya fue verificado."
     },
 
+    REGISTRATION_COMPLETION: {
+        variant: "info",
+        icon: FiInfo,
+        title: "Recuperamos tu registro en el último paso",
+        description:
+            "Tu código ya fue verificado, confirma para que la cuenta sea creada."
+    },
+
 
     // ==========================================
     // FALLBACK
@@ -318,5 +326,29 @@ export const FEEDBACK_ALERT_CONFIG = {
         title: "Ocurrió un error",
         description:
             "No fue posible completar la operación. Inténtalo nuevamente."
-    }
+    },
+
+    SESSION_EXPIRING_SOON: {
+        variant: "warning",
+        icon: FiAlertTriangle,
+        title: "Sesión próxima a expirar",
+        description:
+            "Tu sesión expirará en 10 minutos. Guarda tu trabajo antes de que finalice."
+    },
+
+    SESSION_EXPIRING_CRITICAL: {
+        variant: "error",
+        icon: FiAlertTriangle,
+        title: "Sesión a punto de expirar",
+        description:
+            "Tu sesión expirará en 1 minuto. Guarda tu trabajo inmediatamente."
+    },
+
+    SESSION_EXPIRED: {
+        variant: "error",
+        icon: FiXCircle,
+        title: "Sesión expirada",
+        description:
+            "Tu sesión ha expirado. Inicia sesión nuevamente para continuar."
+    },
 };

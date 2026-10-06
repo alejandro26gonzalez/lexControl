@@ -682,3 +682,55 @@ export const SuccessDescription = styled.p`
 
     color: ${({ theme }) => theme.colors.textSecondary};
 `;
+
+export const IdentificationGroup = styled.div`
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    width: 100%;
+`;
+
+export const IdentificationTypeContainer = styled.div`
+    width: 25%;
+    min-width: 150px;
+`;
+
+export const IdentificationNumberContainer = styled.div`
+    width: 75%;
+`;
+export const Select = styled.select`
+    width: 100%;
+    height: 48px;
+    padding: 0 14px;
+
+    border: 1px solid #D9DDE2;
+    border-radius: 8px;
+
+    background-color: #FFFFFF;
+    color: #08111B;
+
+    font-family: 'Manrope', sans-serif;
+    font-size: 14px;
+
+    outline: none;
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+
+    &:focus {
+        border-color: #43AEC5;
+        box-shadow: 0 0 0 3px rgba(67, 174, 197, 0.12);
+    }
+
+    &:hover {
+        border-color: #B69A6A;
+    }
+
+    &:disabled {
+        background-color: #F7F8F9;
+        cursor: not-allowed;
+    }
+`;

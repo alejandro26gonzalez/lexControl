@@ -3,7 +3,8 @@ from .users import (
     get_user_by_email,
     create_user,
     create_user_profile,
-    create_user_account
+    create_user_account,
+    get_user_by_id
 )
 
 from .roles import (

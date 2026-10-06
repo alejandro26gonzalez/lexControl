@@ -20,10 +20,10 @@ const Recover = () => {
 
                 <RecoverContent>
 
-                    <BackLink as={NavLink} to="/">
+                    <BackLink as={NavLink} to="/portal/login">
 
                         <FiArrowLeft />
-                        <span>Volver al inicio</span>
+                        <span>Volver</span>
 
                     </BackLink>
 

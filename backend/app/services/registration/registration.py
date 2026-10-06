@@ -47,7 +47,7 @@ def get_active_registration_session_by_email(email):
         ).first()
     )
 
-def create_registration_session(email, password_hash, name, last_name):
+def create_registration_session(email, password_hash, name, last_name, identification_type, identification_number):
     email = email.strip().lower()
 
     _invalidate_previous_registration_sessions(email)
@@ -62,6 +62,8 @@ def create_registration_session(email, password_hash, name, last_name):
         password_hash=password_hash,
         name=name,
         last_name=last_name,
+        identification_type=identification_type,
+        identification_number=identification_number,
         token_hash=token_hash,
         created_at=now,
         expires_at=now + timedelta(
@@ -152,6 +154,8 @@ def finalize_registration(
     No realiza commit. La transacción es controlada
     por la ruta que invoque este servicio.
     """
+    
+    
 
     if registration_session is None:
         raise ValueError(
@@ -188,6 +192,8 @@ def finalize_registration(
     profile_data = {
         "name": registration_session.name,
         "last_name": registration_session.last_name,
+        "identification_type": registration_session.identification_type,
+        "identification_number": registration_session.identification_number,
         "phone": registration_session.phone,
         "city": registration_session.city,
         "position": registration_session.position,
@@ -196,7 +202,7 @@ def finalize_registration(
             registration_session.professional_card
         )
     }
-
+    
     user, profile, user_role = create_user_account(
         email=registration_session.email,
         password_hash=registration_session.password_hash,
@@ -210,3 +216,11 @@ def finalize_registration(
     )
 
     return user, profile, user_role
+
+def resume_registration_session(registration_session):
+    token = _generate_registration_token()
+    token_hash = _hash_registration_token(token)
+    
+    registration_session.token_hash = token_hash
+    
+    return token, registration_session

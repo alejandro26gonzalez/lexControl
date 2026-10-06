@@ -1,0 +1,1 @@
+from app.services.auth_identity.external_login import authenticate_external_identity

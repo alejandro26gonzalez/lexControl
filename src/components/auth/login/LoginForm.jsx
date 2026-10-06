@@ -24,6 +24,7 @@ const LoginForm = ({ login }) => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [rememberMe, setRememberMe] = useState(false);
 
     const {
         feedbackAlert,
@@ -38,7 +39,11 @@ const LoginForm = ({ login }) => {
         clearFeedback();
 
         try {
-            const response = await login(email, password);
+            const response = await login(
+                email, 
+                password,
+                rememberMe
+            );
 
             showFeedback(response.code)
 
@@ -113,8 +118,12 @@ const LoginForm = ({ login }) => {
 
             <OptionsRow>
                 <Remember>
-                <input type="checkbox" />
-                <span>Recuérdame</span>
+                    <input 
+                    type="checkbox" 
+                    checked={rememberMe}
+                    onChange={(event) => setRememberMe(event.target.checked)}
+                    />
+                    <span>Recuérdame</span>
                 </Remember>
 
                 <ForgotLink href="/portal/forgot-password">

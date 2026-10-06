@@ -3,11 +3,7 @@ from sqlalchemy import text
 
 from app import db
 
-health_bp = Blueprint(
-    "/health",
-    __name__,
-    url_prefix="/api"
-)
+from app.routes.health import health_bp
 
 @health_bp.route("/health", methods=["GET"])
 def health_check():

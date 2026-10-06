@@ -1,12 +1,8 @@
-from flask import Blueprint, jsonify
+from flask import jsonify
 
 from app.services import role_required
 
-dashboard_bp = Blueprint(
-    "dashboard",
-    __name__,
-    url_prefix = "/dashboard"
-)
+from app.routes.dashboards import dashboard_bp
 
 @dashboard_bp.route("/client", methods=["GET"])
 @role_required("CLIENT")

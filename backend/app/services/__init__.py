@@ -22,3 +22,5 @@ from app.services.auth.auth import (
 )
 
 from app.services.auth.verify_otp import verify_recovery_otp
+
+from app.services.auth_session.session import create_user_session

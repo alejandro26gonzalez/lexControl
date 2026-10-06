@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FiArrowLeft, FiEye, FiEyeOff } from 'react-icons/fi';
 import { NavLink } from 'react-router-dom';
 import FeedbackAlert from "../../feedbackAlert/FeedbackAlert";
@@ -44,7 +44,11 @@ import {
     SuccessContainer,
     SuccessIcon,
     SuccessTitle,
-    SuccessDescription
+    SuccessDescription,
+    IdentificationGroup,
+    IdentificationNumberContainer,
+    IdentificationTypeContainer,
+    Select
 } from '../../../styles/auth/registration/registrationForm.styles';
 
 import {
@@ -55,15 +59,36 @@ import {
     completeRegistration
 } from "../../../services/authService.js";
 
+const IDENTIFICATION_TYPES = [
+    {
+        value: "CC",
+        label: "Cédula de ciudadanía"
+    },
+    {
+        value: "CE",
+        label: "Cédula de extranjería"
+    },
+    {
+        value: "PASSPORT",
+        label: "Pasaporte"
+    }
+];
+
+const RESEND_COOLDOWN_SECONDS = 60;
+
 const RegisterForm = () => {
     const [currentStep, setCurrentStep] = useState(1);
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [resendCooldown, setResendCooldown] = useState(0);
+
 
     const [basicData, setBasicData] = useState({
         name: '',
         lastName: '',
+        identification_type: '',
+        identification_number: '',
         email: '',
         password: '',
         confirmPassword: '',
@@ -80,13 +105,13 @@ const RegisterForm = () => {
     const [verificationCode, setVerificationCode] = useState('');
     const [isAccountCreated, setIsAccountCreated] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [otpVerified, setOtpVerified] = useState(false);
 
     const {
         feedbackAlert,
         showFeedback,
         clearFeedback,
     } = useFeedbackAlert();
-
 
     const handleBasicChange = (event) => {
         const { name, value } = event.target;
@@ -117,10 +142,18 @@ const RegisterForm = () => {
             const response = await register(
                 basicData.name,
                 basicData.lastName,
+                basicData.identification_type,
+                basicData.identification_number,
                 basicData.email,
                 basicData.password,
                 basicData.confirmPassword
             );
+
+            if (response.code === "REGISTRATION_IN_PROGRESS") {
+                resumeRegistration(response);
+                showFeedback(response.code);
+                return;
+            }
 
             showFeedback(response.code);
             setCurrentStep(2);
@@ -149,9 +182,11 @@ const RegisterForm = () => {
                 profileData.specialty,
                 profileData.professionalCard
             );
-
-
             showFeedback(response.code);
+
+            setOtpVerified(false);
+            setVerificationCode('');
+            setResendCooldown(60);
             setCurrentStep(3);
 
         } catch (error) {
@@ -171,11 +206,21 @@ const RegisterForm = () => {
         setIsLoading(true);
 
         try {
-            const response = await verifyRegistrationOTP(
-                verificationCode
-            );
 
-            const completion = await completeRegistration();
+            if (!otpVerified) {
+                const otpResponse = await verifyRegistrationOTP(
+                    verificationCode
+                );
+
+                if (otpResponse.code !== "OTP_VERIFIED") {
+                    showFeedback(otpResponse.code);
+                    return;
+                }
+
+                setOtpVerified(true);
+            }
+
+            const response = await completeRegistration();
 
             showFeedback(response.code);
             setIsAccountCreated(true);
@@ -198,6 +243,11 @@ const RegisterForm = () => {
     };
 
     const handleResendRegistrationOTP = async () => {
+
+        if (resendCooldown > 0 || otpVerified) {
+            return;
+        }
+
         clearFeedback();
         setIsLoading(true);
 
@@ -205,12 +255,79 @@ const RegisterForm = () => {
             const response = await resendRegistrationOTP();
 
             showFeedback(response.code);
+
+            if (response.code === "OTP_RESENT") {
+                setVerificationCode('');
+                setResendCooldown(60);
+            }
+
         } catch (error) {
             showFeedback(error?.data?.code);
         } finally {
             setIsLoading(false);
         }
     };
+
+    const hydrateRegistration = (registration) => {
+        if (!registration) return;
+
+        setBasicData((prev) => ({
+            ...prev,
+            name: registration.name ?? "",
+            lastName: registration.last_name ?? "",
+            identification_type: registration.identification_type ?? "",
+            identification_number: registration.identification_number ?? "",
+            email: registration.email ?? "",
+        }));
+
+        setProfileData((prev) => ({
+            ...prev,
+            phone: registration.phone ?? "",
+            city: registration.city ?? "",
+            position: registration.position ?? "",
+            specialty: registration.specialty ?? "",
+            professionalCard: registration.professional_card ?? ""
+        }))
+    }
+
+    const resumeRegistration = (response) =>{
+        hydrateRegistration(response.registration);
+
+        switch (response.registration_step) {
+            case "profile":
+                setCurrentStep(2);
+                setOtpVerified(false);
+                break;
+            case "verify_otp":
+                setCurrentStep(3);
+                setOtpVerified(false);
+                break;
+            case "create_account":
+                setCurrentStep(4);
+                setOtpVerified(true);
+                showFeedback("REGISTRATION_COMPLETION");
+                break;
+            case "complete":
+                setIsAccountCreated(true);
+                break;
+            default:
+                setOtpVerified(false);
+                setCurrentStep(1);
+                break;
+        }
+    }
+
+    useEffect(() => {
+        if (resendCooldown <= 0) {
+            return;
+        }
+
+        const timer = setInterval(() => {
+            setResendCooldown((previous) => previous - 1);
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [resendCooldown]);
 
     return (
         <FormContainer>
@@ -223,12 +340,12 @@ const RegisterForm = () => {
             )}
 
             {/* boton ir a inicio */}
-            <BackLink as={NavLink} to="/">
+            <BackLink as={NavLink} to="/portal/login">
                 <FiArrowLeft />
-                <span>Volver al inicio</span>
+                <span>Volver</span>
             </BackLink>
 
-            
+
 
             {!isAccountCreated ? (
                 <>
@@ -325,6 +442,7 @@ const RegisterForm = () => {
                                             placeholder="Ingresa tu nombre..."
                                             value={basicData.name}
                                             onChange={handleBasicChange}
+                                            required
                                         />
                                     </FieldGroup>
 
@@ -340,8 +458,61 @@ const RegisterForm = () => {
                                             placeholder="Ingresa tus apellidos..."
                                             value={basicData.lastName}
                                             onChange={handleBasicChange}
+                                            required
                                         />
                                     </FieldGroup>
+
+                                    <IdentificationGroup>
+                                        <IdentificationTypeContainer>
+                                            <FieldGroup>
+                                                <FieldLabel htmlFor='identification_type'>
+                                                    Tipo de documento
+                                                </FieldLabel>
+
+                                                <Select
+                                                id='identification_type'
+                                                name='identification_type'
+                                                value={basicData.identification_type}
+                                                onChange={handleBasicChange}
+                                                >
+                                                    <option value="" disabled>
+                                                        Selecciona
+                                                    </option>
+
+                                                    {IDENTIFICATION_TYPES.map((type) => (
+                                                        <option
+                                                        key={type.value}
+                                                        value={type.value}
+                                                        >
+                                                            {type.label}
+                                                        </option>
+                                                    ))}
+                                                </Select>
+                                            </FieldGroup>
+                                            
+                                        </IdentificationTypeContainer>
+
+                                        <IdentificationNumberContainer>
+
+                                            <FieldGroup>
+                                                <FieldLabel htmlFor='identification_number'>
+                                                    Número de identificación
+                                                </FieldLabel>
+
+                                                <FieldInput 
+                                                    id='identification_number'
+                                                    name='identification_number'
+                                                    type='text'
+                                                    placeholder='Ingresa tu número de identificación...'
+                                                    value={basicData.identification_number}
+                                                    onChange={handleBasicChange}
+                                                    required
+                                                />
+                                            </FieldGroup>
+
+                                        </IdentificationNumberContainer>
+                                    </IdentificationGroup>
+
 
                                     <FieldGroup>
                                         <FieldLabel htmlFor="register-email">
@@ -355,6 +526,7 @@ const RegisterForm = () => {
                                             placeholder="tu@correo.com"
                                             value={basicData.email}
                                             onChange={handleBasicChange}
+                                            required
                                         />
                                     </FieldGroup>
 
@@ -375,6 +547,7 @@ const RegisterForm = () => {
                                                 placeholder="Crea una contraseña..."
                                                 value={basicData.password}
                                                 onChange={handleBasicChange}
+                                                required
                                             />
 
                                             <PasswordToggle
@@ -419,6 +592,7 @@ const RegisterForm = () => {
                                                     basicData.confirmPassword
                                                 }
                                                 onChange={handleBasicChange}
+                                                required
                                             />
 
                                             <PasswordToggle
@@ -449,6 +623,7 @@ const RegisterForm = () => {
                                     <TermsCheckbox
                                         id="terms"
                                         type="checkbox"
+                                        required
                                     />
 
                                     <TermsText htmlFor="terms">
@@ -504,6 +679,7 @@ const RegisterForm = () => {
                             onSubmit={handleContinueToConfirmation}
                         >
                             <FieldsGrid>
+
                                 <FieldGroup>
                                     <FieldLabel htmlFor="position">
                                         Cargo
@@ -561,6 +737,7 @@ const RegisterForm = () => {
                                         placeholder="Número de contacto"
                                         value={profileData.phone}
                                         onChange={handleProfileChange}
+                                        required
                                     />
                                 </FieldGroup>
 
@@ -576,6 +753,7 @@ const RegisterForm = () => {
                                         placeholder="Ciudad de residencia"
                                         value={profileData.city}
                                         onChange={handleProfileChange}
+                                        required
                                     />
                                 </FieldGroup>
                             </FieldsGrid>
@@ -631,9 +809,20 @@ const RegisterForm = () => {
                                 <ResendButton
                                     type="button"
                                     onClick={handleResendRegistrationOTP}
-                                    disabled={isLoading}
+                                    disabled={
+                                        isLoading ||
+                                        resendCooldown > 0 ||
+                                        otpVerified
+                                    }
                                 >
-                                    {isLoading ? 'Procesando...' : 'Reenviar código'}
+                                    {otpVerified 
+                                        ? 'Código verificado'
+                                        : resendCooldown > 0
+                                            ? `Reenviar código (${resendCooldown}s)`
+                                            : isLoading
+                                                ? 'Procesando...'
+                                                : 'Reenviar código'
+                                    }
                                 </ResendButton>
                             </VerificationContainer>
 

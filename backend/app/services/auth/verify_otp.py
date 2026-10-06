@@ -66,7 +66,7 @@ def verify_recovery_otp(recovery_token, otp):
             
             if failed_otps >= MAX_FAILED_OTPS_PER_SESSION:
                 
-                recovery_session.bloked_at = datetime.now(timezone.utc)
+                recovery_session.blocked_at = datetime.now(timezone.utc)
                 
                 return (
                     False,

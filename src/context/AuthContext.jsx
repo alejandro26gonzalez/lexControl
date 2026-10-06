@@ -16,6 +16,7 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [expiresAt, setExpiresAt] = useState(null);
 
     useEffect(() => {
         async function checkSession() {
@@ -24,11 +25,14 @@ export function AuthProvider({ children }) {
 
                 if (response.authenticated) {
                     setUser(response.user);
+                    setExpiresAt(response.expires_at);
                 } else {
                     setUser(null);
+                    setExpiresAt(null);
                 };
             } catch {
                 setUser(null);
+                setExpiresAt(null);
             } finally {
                 setLoading(false);
             }
@@ -37,17 +41,18 @@ export function AuthProvider({ children }) {
         checkSession();
     }, []);
 
-    async function login(email, password) {
-        console.log("AUTH CONTEXT → intentando login");
-
-        const response = await loginRequest(email, password);
-
-        console.log("AUTH CONTEXT → respuesta del backend:", response);
-
-        setUser(response.user);
-
-        console.log("AUTH CONTEXT → usuario recibido:", response.user);
-
+    async function login(email, password, rememberMe) {
+        const response = await loginRequest(email, password, rememberMe);
+        const session = await getCurrentUser();
+        
+        if (session.authenticated) {
+            setUser(response.user);
+            setExpiresAt(session.expires_at);
+        } else {
+            setUser(null);
+            setExpiresAt(null);
+        }
+        
         return response;
     }
 
@@ -55,6 +60,12 @@ export function AuthProvider({ children }) {
         await logoutRequest();
 
         setUser(null);
+        setExpiresAt(null);
+    }
+
+    function clearAuthentication() {
+        setUser(null);
+        setExpiresAt(null);
     }
 
     const value = {
@@ -62,7 +73,9 @@ export function AuthProvider({ children }) {
         loading,
         isAuthenticated: Boolean(user),
         login,
-        logout
+        logout,
+        expiresAt,
+        clearAuthentication
     };
 
     return (

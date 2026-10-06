@@ -1,19 +1,24 @@
+import os
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
+from authlib.integrations.flask_client import OAuth
 
 from app.config import Config
 
 
 db = SQLAlchemy()
 migrate = Migrate()
+oauth = OAuth()
 
 
 def create_app():
     app = Flask(__name__)
     
     app.config.from_object(Config)
+    app.config["EMAIL_LOGO_URL"] = os.getenv("EMAIL_LOGO_URL")
     
     CORS(
         app,
@@ -25,6 +30,18 @@ def create_app():
     
     db.init_app(app)
     migrate.init_app(app, db)
+    oauth.init_app(app)
+    
+    oauth.register(
+        name="google",
+        server_metadata_url=(
+            "https://accounts.google.com/"
+            ".well-known/openid-configuration"
+        ),
+        client_kwargs={
+            "scope": "openid profile email"
+        }
+    )
     
     from app.models import (
         User,
@@ -35,12 +52,8 @@ def create_app():
         PasswordRecoverySession
     )
     
-    from app.routes.auth import auth_bp
-    from app.routes.dashboard import dashboard_bp
-    from app.routes.health import health_bp
+    from app.routes import register_routes
 
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(dashboard_bp)
-    app.register_blueprint(health_bp)
+    register_routes(app)
 
     return app
