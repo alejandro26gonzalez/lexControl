@@ -9,9 +9,7 @@ import RequireRole from "./guards/RequireRole";
 const Login = React.lazy(() => import("../pages/private/login/Login"));
 const Register = React.lazy(() => import("../pages/private/registration/Registry"));
 const RecoverPass = React.lazy(() => import ("../pages/private/recover/RecoverPass"));
-const ClientDash = React.lazy(() => import("../pages/private/dash/clients/ClientDash"));
-const CollabDash = React.lazy(() => import("../pages/private/dash/collaborators/CollabDash"));
-const AdminDash = React.lazy(() => import("../pages/private/dash/admin/AdminDash"));
+const AppShell = React.lazy(() => import("../pages/private/layout/AppShell/AppShell"));
 
 const PrivateRoutes = [
     {
@@ -38,44 +36,34 @@ const PrivateRoutes = [
                 element: <RequireAuth />,
                 children: [
                     {
-                        element: (
-                            <RequireRole 
-                            allowedRoles={["CLIENT"]}
-                            />
-                        ),
+                        element: <AppShell />,
                         children: [
                             {
                                 path: "/portal/client/dash",
-                            element: <ClientDash />
-                            }
-                        ]
-                    },
-                    {
-                        element: (
-                            <RequireRole 
-                            allowedRoles={["COLLABORATOR"]}
-                            />
-                        ),
-                        children: [
+                                element: (
+                                    <RequireRole 
+                                    allowedRoles={["CLIENT"]}
+                                    />
+                                )
+                            },
                             {
                                 path: "/portal/collaborator/dash",
-                                element: <CollabDash />
+                                element: (
+                                    <RequireRole 
+                                    allowedRoles={["COLLABORATOR"]}
+                                    />
+                                )
+                            },
+                            {
+                                path: "/portal/admin/dash",
+                                element: (
+                                    <RequireRole 
+                                    allowedRoles={["ADMIN"]}
+                                    />
+                                )
                             }
                         ]
                     },
-                    {
-                        element: (
-                            <RequireRole 
-                            allowedRoles={["ADMIN"]}
-                            />
-                        ),
-                        children: [
-                            {
-                                path: "/portal/admin/dash",
-                                element: <AdminDash />
-                            }
-                        ]
-                    }
                 ]
             },
         ]
