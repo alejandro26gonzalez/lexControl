@@ -12,7 +12,7 @@ export const navigationByRole = {
   ADMIN: [
     {
       label: "Inicio",
-      path: "/portal/admin/dashboard",
+      path: "/portal/admin",
       icon: Home,
     },
 

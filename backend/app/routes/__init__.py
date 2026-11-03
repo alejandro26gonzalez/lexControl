@@ -1,11 +1,13 @@
 from app.routes.auth import auth_bp
 from app.routes.dashboards import dashboard_bp
 from app.routes.health import health_bp
+from app.routes.admin import admin_bp
 
 BLUEPRINTS = (
     auth_bp,
     dashboard_bp,
-    health_bp
+    health_bp,
+    admin_bp
 )
 
 def register_routes(app):

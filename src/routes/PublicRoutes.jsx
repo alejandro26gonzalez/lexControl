@@ -9,6 +9,7 @@ const Team = React.lazy(() => import("../pages/public/team/Team"));
 const Resources = React.lazy(() => import("../pages/public/resources/Resources"));
 const Contact = React.lazy(() => import("../pages/public/contact/Contact"));
 const Legal = React.lazy(() => import("../pages/public/legalInfo/LegalLayout"));
+const ActivationRoute = React.lazy(() => import("../components/auth/activation/ActivateAccount"));
 
 const PublicRoutes =[
     {
@@ -43,6 +44,10 @@ const PublicRoutes =[
                 element: <Legal />
             }
         ]
+    },
+    {
+        path: "/activate-account",
+        element: <ActivationRoute />
     }
 ];
 

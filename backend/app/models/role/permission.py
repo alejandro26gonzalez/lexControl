@@ -20,3 +20,9 @@ class Permission(db.Model):
         db.String(255),
         nullable=True
     )
+    
+    role_permissions = db.relationship(
+        "RolePermission",
+        back_populates="permission",
+        cascade="all, delete-orphan"
+    )

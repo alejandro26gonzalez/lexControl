@@ -123,3 +123,20 @@ export async function completeRegistration(){
         method: "POST",
     })
 }
+
+export async function activateAccount(
+    token,
+    newPassword,
+    confirmPassword
+) {
+    return apiRequest("/auth/activate-account", {
+        method:"POST",
+        body: JSON.stringify({
+            token,
+            new_password: newPassword,
+            confirm_password: confirmPassword
+        })
+    });
+    
+}
+

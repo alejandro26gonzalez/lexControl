@@ -74,6 +74,12 @@ class User(db.Model):
         ),
     )
     
+    user_roles = db.relationship(
+        "UserRole",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+    
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
         
@@ -82,3 +88,9 @@ class User(db.Model):
             self.password_hash,
             password
         )
+        
+    activation_tokens = db.relationship(
+        "ActivationToken",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )

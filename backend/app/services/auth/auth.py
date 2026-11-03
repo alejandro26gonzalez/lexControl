@@ -138,3 +138,12 @@ def role_required(*allowed_roles):
         return decorated_function
     
     return decorator
+
+def revoke_current_session():
+    current_session = get_current_session()
+    
+    if current_session:
+        current_session.revoked_at = datetime.now(timezone.utc)
+        db.session.commit()
+        
+    session.clear()

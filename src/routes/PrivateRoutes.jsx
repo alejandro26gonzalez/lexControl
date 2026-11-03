@@ -11,6 +11,10 @@ const Register = React.lazy(() => import("../pages/private/registration/Registry
 const RecoverPass = React.lazy(() => import ("../pages/private/recover/RecoverPass"));
 const AppShell = React.lazy(() => import("../pages/private/layout/AppShell/AppShell"));
 
+// modulos de admin
+const UsuariosAdmin = React.lazy(() => import("../components/modules/admin/UsersManagement"));
+const AdminHome = React.lazy(() => import("../modules/admin/home/AdminHome"));
+
 const PrivateRoutes = [
     {
         element: <PrivateLayout />,
@@ -55,12 +59,22 @@ const PrivateRoutes = [
                                 )
                             },
                             {
-                                path: "/portal/admin/dash",
+                                path: "/portal/admin",
                                 element: (
                                     <RequireRole 
                                     allowedRoles={["ADMIN"]}
                                     />
-                                )
+                                ),
+                                children: [
+                                    {
+                                        index: true,
+                                        element: <AdminHome />
+                                    },
+                                    {
+                                        path: "users",
+                                        element: <UsuariosAdmin />
+                                    }
+                                ]
                             }
                         ]
                     },

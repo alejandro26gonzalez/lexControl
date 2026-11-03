@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { navigationByRole } from "../../../../config/appshell/navigation";
+import LogoImg from "../../../../assets/logos/logo-negro.png";
 
 import {
     SidebarContainer,
@@ -19,7 +20,7 @@ function Sidebar({ role }) {
         <SidebarContainer>
             <SidebarBrand>
                 <BrandLogo
-                    src="../../../../assets/logos/logo-negro.png"
+                    src={LogoImg}
                     alt="LexControl"
                 />
             </SidebarBrand>

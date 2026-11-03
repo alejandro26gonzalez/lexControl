@@ -74,7 +74,6 @@ const IDENTIFICATION_TYPES = [
     }
 ];
 
-const RESEND_COOLDOWN_SECONDS = 60;
 
 const RegisterForm = () => {
     const [currentStep, setCurrentStep] = useState(1);

@@ -21,3 +21,12 @@ class RolePermission(db.Model):
         ),
         primary_key=True
     )
+    role = db.relationship(
+        "Role",
+        back_populates="role_permissions"
+    )
+
+    permission = db.relationship(
+        "Permission",
+        back_populates="role_permissions"
+    )

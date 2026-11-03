@@ -161,6 +161,25 @@ export const FEEDBACK_ALERT_CONFIG = {
             "No fue posible generar un nuevo código. Inténtalo nuevamente."
     },
 
+    // ==========================================
+    // ACTIVATION
+    // ==========================================
+
+    INVALID_ACTIVATION_TOKEN: {
+        variant: "warning",
+        icon: FiAlertTriangle,
+        title: "Token de activación inválido",
+        description:
+            "Ha ocurrido un error durante la activación. El token de activación ha expirado."
+    },
+
+    ACCOUNT_ACTIVATED: {
+        variant: "success",
+        icon: FiCheckCircle,
+        title: "Cuenta activada",
+        description:
+            "Tu cuenta ha sido activada con éxito, ya puedes iniciar sesión."
+    },
 
     // ==========================================
     // PASSWORD
@@ -315,6 +334,76 @@ export const FEEDBACK_ALERT_CONFIG = {
             "Tu código ya fue verificado, confirma para que la cuenta sea creada."
     },
 
+    // ==========================================
+    // ADMIN CREATE USERS
+    // ==========================================
+
+    USER_CREATED: {
+        variant: "success",
+        icon: FiCheckCircle,
+        title: "Usuario creado",
+        description:
+            "El usuario fue creado con éxito."
+    },
+
+    USER_CREATED_EMAIL_FAILED: {
+        variant: "error",
+        icon: FiXCircle,
+        title: "Ocurrió un error",
+        description:
+            "No fue posible crear este usuario. Inténtalo nuevamente."
+    },
+
+    USER_UPDATED: {
+        variant: "success",
+        icon: FiCheckCircle,
+        title: "Usuario modificado",
+        description:
+            "El usuario fue modificado con éxito."
+    },
+
+    USER_DISABLED: {
+        variant: "success",
+        icon: FiCheckCircle,
+        title: "Usuario inhabilitado",
+        description: "Usuario inhabilitado correctamente. Sus sesiones activas fueron revocadas."
+    },
+
+    USER_ENABLED: {
+        variant: "success",
+        icon: FiCheckCircle,
+        title: "Usuario habilitado",
+        description: "Usuario habilitado correctamente. Ya puede iniciar sesión."
+    },
+
+    USER_STATUS_ERROR: {
+        variant: "error",
+        icon: FiXCircle,
+        title: "Ocurrió un error",
+        description:
+            "No fue posible cambiar el estado del usuario."
+    },
+    
+    USER_DELETED: {
+        variant: "success",
+        icon: FiCheckCircle,
+        title: "Usuario eliminado",
+        description: "El usuario fue eliminado correctamente de LexControl."
+    },
+
+    USER_DELETE_ERROR: {
+        variant: "error",
+        icon: FiXCircle,
+        title: "Error al eliminar",
+        description: "No fue posible eliminar el usuario."
+    },
+
+    USER_DELETE_CONFLICT: {
+        variant: "warning",
+        icon: FiAlertTriangle,
+        title: "Eliminación no permitida",
+        description: "El usuario tiene registros asociados que impiden su eliminación."
+    },
 
     // ==========================================
     // FALLBACK

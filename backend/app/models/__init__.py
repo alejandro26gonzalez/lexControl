@@ -5,6 +5,7 @@ from app.models.role.role_permission import RolePermission
 from app.models.user.user_role import UserRole
 from app.models.user.user import User
 from app.models.user.user_profile import UserProfile
+from app.models.user.activation_token import ActivationToken
 
 from app.models.auth.session import Session
 from app.models.auth.password_recovery_session import PasswordRecoverySession

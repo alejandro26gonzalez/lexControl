@@ -15,10 +15,15 @@ class Role(db.Model):
         index=True
     )
     
-    permissions = db.relationship(
-        "Permission",
-        secondary="role_permissions",
-        backref="roles"
+    role_permissions = db.relationship(
+        "RolePermission",
+        back_populates="role",
+        cascade="all, delete-orphan"
+    )
+    
+    user_roles = db.relationship(
+        "UserRole",
+        back_populates="role"
     )
     
     

@@ -1,14 +1,17 @@
-export function getDashboardRoute (user) {
+export function getDashboardRoute(user) {
     const role = user?.roles?.[0];
 
-    switch (role){
+    switch (role) {
         case "CLIENT":
             return "/portal/client/dash";
+
         case "COLLABORATOR":
             return "/portal/collaborator/dash";
+
         case "ADMIN":
-            return "/portal/admin/dash";
+            return "/portal/admin";
+
         default:
             return "/portal/login";
-    };
-};
+    }
+}

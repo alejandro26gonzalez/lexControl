@@ -7,8 +7,8 @@ import styled from "styled-components";
 
 export const AppShellContainer = styled.div`
     display: flex;
-
     width: 100%;
+    height: 100vh;
     min-height: 100vh;
 
     background: ${({ theme }) =>
@@ -30,7 +30,8 @@ export const AppShellMain = styled.main`
 
     flex: 1;
     min-width: 0;
-    min-height: 100vh;
+    height: 100%;
+    min-height: 0;
 
     background: ${({ theme }) =>
         theme.colors?.surface || "#FFFFFF"};
@@ -45,11 +46,15 @@ export const AppShellMain = styled.main`
 export const AppShellContent = styled.div`
     flex: 1;
     min-width: 0;
+    min-height: 0;
 
     padding: 0 24px 32px;
 
     overflow-x: hidden;
     overflow-y: auto;
+
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
 
     @media (max-width: 768px) {
         padding: 0 18px 24px;
@@ -147,6 +152,23 @@ export const WelcomeImage = styled.img`
 
     object-fit: cover;
     object-position: center;
+
+    /* Difuminado progresivo desde el lado izquierdo */
+    -webkit-mask-image: linear-gradient(
+        to right,
+        transparent 0%,
+        rgba(0, 0, 0, 0.15) 12%,
+        rgba(0, 0, 0, 0.65) 35%,
+        #000 58%
+    );
+
+    mask-image: linear-gradient(
+        to right,
+        transparent 0%,
+        rgba(0, 0, 0, 0.15) 12%,
+        rgba(0, 0, 0, 0.65) 35%,
+        #000 58%
+    );
 
     pointer-events: none;
     user-select: none;

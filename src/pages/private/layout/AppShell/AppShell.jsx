@@ -1,7 +1,13 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
+import {useAuth} from "../../../../context/AuthContext";
+import {
+    pageConfig,
+    defaultPageConfig
+} from "../../../../config/appshell/pageConfig";
 
 import Sidebar from "../Sidebar/Sidebar";
 import TopBar from "../TopBar/TopBar";
+import HeroImg from "../../../../assets/images/team/hero.png";
 
 import {
     AppShellContainer,
@@ -13,18 +19,30 @@ import {
     WelcomeImage,
 } from "../../../../styles/components/layout/appShell/appshell.styles";
 
-function AppShell({ user }) {
-    const roles = user?.roles ?? [];
+function AppShell() {
 
-    const role = user?.activeRole ?? roles[0] ?? null;
+    const { user, loading, isAuthenticated} = useAuth();
+    const {pathname} = useLocation();
+
+    if (loading) return null;
+
+    if (!isAuthenticated || !user) return null;
+
+    const role = user?.roles?.[0] ?? null;
 
     const displayName = 
         user?.name?.trim() ||
-        user?.full_name?.trim() ||
         user?.email ||
         "Usuario";
     
     const firstName = displayName.split(/\s+/)[0];
+
+    const currentPage = pageConfig[role]?.[pathname] ?? defaultPageConfig;
+
+    const welcomeTitle = 
+        currentPage.type === "home"
+            ? `Bienvenido, ${firstName}`
+            : currentPage.title;
 
     return (
         <AppShellContainer>
@@ -37,16 +55,16 @@ function AppShell({ user }) {
                     <WelcomeSection>
                         <div>
                             <WelcomeTitle>
-                                Bienvenido, {firstName}
+                                {welcomeTitle}
                             </WelcomeTitle>
 
                             <WelcomeDescription>
-                                Aquí tienes un resumen de la actividad de LexControl.
+                                {currentPage.description}
                             </WelcomeDescription>
                         </div>
 
                         <WelcomeImage 
-                        src="../../../../assets/images/team/hero.png"
+                        src={HeroImg}
                         alt=""
                         aria-hidden="true"
                         />

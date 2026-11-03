@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
     Search,
@@ -25,8 +26,13 @@ import {
     ProfileDivider
 } from "../../../../styles/components/layout/appShell/topbar.styles";
 
+import { useAuth } from "../../../../context/AuthContext";
+
 function TopBar({ user }) {
     const [menuOpen, setMenuOpen] = useState(false);
+
+    const navigate = useNavigate();
+    const {logout} = useAuth();
 
     const displayName = 
         user?.name?.trim() ||
@@ -51,10 +57,20 @@ function TopBar({ user }) {
 
     const roleLabel = roleLabels[activeRole] ?? "Usuario";
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         setMenuOpen(false);
-        // Integrar aquí el servicio de cierre de sesión existente.
-        // Debe revocar la sesión en el backend y limpiar el contexto.
+        
+        try {
+            await logout();
+            navigate("/portal/login", {
+                replace:true,
+                state: {
+                    loggedOut: true
+                }
+            });
+        } catch (error) {
+            console.error("Error al cerrar sesión:", error);
+        }
     };
 
     return (
@@ -65,6 +81,8 @@ function TopBar({ user }) {
                 </SearchIcon>
 
                 <SearchInput
+                    id="search-users-documents"
+                    name="search-users-documents"
                     type="search"
                     placeholder="Buscar usuarios, documentos..."
                     aria-label="Buscar en LexControl"

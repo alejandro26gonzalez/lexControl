@@ -1,8 +1,9 @@
 import os
 
 from dotenv import load_dotenv
+from sqlalchemy import over
 
-load_dotenv()
+load_dotenv(override=True)
 
 class Config:
     ENVIRONMENT = os.getenv(
@@ -26,6 +27,14 @@ class Config:
     )
     GOOGLE_REDIRECT_URI = os.getenv(
         "GOOGLE_REDIRECT_URI"
+    )
+    
+    FRONTEND_URL = os.getenv(
+        "FRONTEND_URL"
+    )
+    
+    EMAIL_LOGO_URL= os.getenv(
+        "EMAIL_LOGO_URL"
     )
     
     if not SECRET_KEY:

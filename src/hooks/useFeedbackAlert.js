@@ -1,11 +1,10 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { FEEDBACK_ALERT_CONFIG } from "../config/components/feedback";
 
-const useFeedbackAlert = () => {
+const useFeedbackAlert = (duration = 4000) => {
     const [feedbackAlert, setFeedbackAlert] = useState(null);
 
     const showFeedback = useCallback((code) => {
-
         const config = FEEDBACK_ALERT_CONFIG[code];
 
         if (!config) {
@@ -18,7 +17,6 @@ const useFeedbackAlert = () => {
         }
 
         setFeedbackAlert(config);
-
     }, []);
 
     const showCustomFeedback = useCallback((config) => {
@@ -28,6 +26,16 @@ const useFeedbackAlert = () => {
     const clearFeedback = useCallback(() => {
         setFeedbackAlert(null);
     }, []);
+
+    useEffect(() => {
+        if (!feedbackAlert) return;
+
+        const timeoutId = setTimeout(() => {
+            setFeedbackAlert(null);
+        }, duration);
+
+        return () => clearTimeout(timeoutId);
+    }, [feedbackAlert, duration]);
 
     return {
         feedbackAlert,

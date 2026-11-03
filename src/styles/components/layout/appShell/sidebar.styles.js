@@ -1,5 +1,6 @@
 
 import styled from "styled-components";
+import {NavLink} from "react-router-dom";
 
 export const SidebarContainer = styled.aside`
     display: flex;
@@ -68,7 +69,7 @@ export const SidebarNavigation = styled.nav`
     width: 100%;
 `;
 
-export const NavigationItem = styled(NavLinkBase)`
+export const NavigationItem = styled(NavLink)`
     display: flex;
     align-items: center;
 
@@ -113,10 +114,6 @@ export const NavigationItem = styled(NavLinkBase)`
     }
 `;
 
-// Permite usar NavLink como elemento base de styled-components.
-function NavLinkBase({ className, ...props }) {
-    return <a className={className} {...props} />;
-}
 
 export const NavigationIcon = styled.span`
     display: inline-flex;

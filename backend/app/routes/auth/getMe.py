@@ -41,5 +41,10 @@ def get_me():
     return jsonify({
         "message": "Sesión autenticada correctamente.",
         "authenticated": True,
-        "expires_at": current_session.expires_at.isoformat()
-    })
+        "expires_at": current_session.expires_at.isoformat(),
+        "user": {
+            "id": user.id,
+            "email": user.email,
+            "roles": roles
+        }
+    }), 200
