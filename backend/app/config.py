@@ -47,7 +47,7 @@ class Config:
             "DATABASE_URL no está configurada."
         )    
         
-    SQLALCHEMY_DATABASE_URI = DATABASE_URL
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     SESSION_COOKIE_HTTPONLY = True
