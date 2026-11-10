@@ -15,4 +15,15 @@ from app.models.auth.auth_identity import AuthIdentity
 from app.models.registration.registration_otp import RegistrationOTP
 from app.models.registration.registration_session import RegistrationSession
 
+from app.models.sites.site import Site
+from app.models.sites.court import Court
+
+from app.models.catalogs.professional import Professional
+from app.models.catalogs.specialties import Specialty
+
+
+from app.models.shared.agenda import Agenda
+from app.models.shared.actuacion import Actuacion
+from app.models.shared.documento import Documento
+from app.models.shared.expediente import Expediente
 

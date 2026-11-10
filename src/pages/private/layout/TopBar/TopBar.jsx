@@ -28,7 +28,11 @@ import {
 
 import { useAuth } from "../../../../context/AuthContext";
 
-function TopBar({ user }) {
+function TopBar({ 
+    user ,
+    onOpenProfile,
+    onOpenPreferences
+}) {
     const [menuOpen, setMenuOpen] = useState(false);
 
     const navigate = useNavigate();
@@ -121,7 +125,10 @@ function TopBar({ user }) {
                         <ProfileMenuItem
                             type="button"
                             role="menuitem"
-                            onClick={() => setMenuOpen(false)}
+                            onClick={() => {
+                                setMenuOpen(false);
+                                onOpenProfile?.();
+                            }}
                         >
                             <UserRound size={16} />
                             Mi perfil
@@ -130,7 +137,10 @@ function TopBar({ user }) {
                         <ProfileMenuItem
                             type="button"
                             role="menuitem"
-                            onClick={() => setMenuOpen(false)}
+                            onClick={() => {
+                                setMenuOpen(false);
+                                onOpenPreferences?.();
+                            }}
                         >
                             <Settings size={16} />
                             Preferencias

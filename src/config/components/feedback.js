@@ -8,6 +8,107 @@ import {
 export const FEEDBACK_ALERT_CONFIG = {
 
     // ==========================================
+    // AGENDA
+    // ==========================================
+
+    //CONSULTA
+    APPOINTMENT_SEARCH: {
+        variant: "success",
+        icon: FiCheckCircle,
+        title: "Consulta de agenda",
+        description: "La agenda ha sido consultad correctamente."
+    },
+
+    APPOINTMENT_SEARCH_ERROR: {
+        variant: "danger",
+        icon: FiAlertTriangle,
+        title: "Consulta de agenda incorrecta",
+        description: "Hubo un error consultando la agenda disponible."
+    },
+
+    AGENDA_ERROR: {
+        variant: "danger",
+        icon: FiAlertTriangle,
+        title: "Consulta de agenda incorrecta",
+        description: "Hubo un error consultando la agenda disponible."
+    },
+
+    APPOINTMENT_SEARCH_GENERIC: {
+        variant: "danger",
+        icon: FiAlertTriangle,
+        title: "Error",
+        description: "No fue posible consultar la agenda."
+    },
+    
+
+    // CREACIÓN
+    APPOINTMENT_CREATED: {
+        variant: "success",
+        icon: FiCheckCircle,
+        title: "Compromiso creado",
+        description: "El compromiso se ha registrado correctamente y está disponible en la agenda."
+    },
+
+    APPOINTMENT_CONFLICT: {
+        variant: "warning",
+        icon: FiAlertTriangle,
+        title: "Conflicto de horario",
+        description: "El horario seleccionado presenta un conflicto con otro compromiso."
+    },
+
+    APPOINTMENT_CREATE_ERROR: {
+        variant: "error",
+        icon: FiXCircle,
+        title: "Error al crear compromiso",
+        description: "No fue posible registrar el compromiso. Inténtalo nuevamente."
+    },
+
+    // CANCELACIÓN
+    APPOINTMENT_CANCELLED: {
+        variant: "success",
+        icon: FiCheckCircle,
+        title: "Compromiso cancelado",
+        description: "El compromiso ha sido cancelado correctamente."
+    },
+
+    APPOINTMENT_CANCEL_ERROR: {
+        variant: "error",
+        icon: FiXCircle,
+        title: "Error al cancelar",
+        description: "No fue posible cancelar el compromiso."
+    },
+
+    // REPROGRAMACIÓN
+    APPOINTMENT_RESCHEDULED: {
+        variant: "success",
+        icon: FiCheckCircle,
+        title: "Compromiso reprogramado",
+        description: "La fecha y el horario del compromiso se actualizaron correctamente."
+    },
+
+    APPOINTMENT_RESCHEDULE_ERROR: {
+        variant: "error",
+        icon: FiXCircle,
+        title: "Error al reprogramar",
+        description: "No fue posible modificar el horario del compromiso."
+    },
+
+    // CONSULTAS
+    APPOINTMENT_LOAD_ERROR: {
+        variant: "error",
+        icon: FiXCircle,
+        title: "Error al cargar agenda",
+        description: "No fue posible recuperar los compromisos programados."
+    },
+
+    APPOINTMENT_CASES_LOAD_ERROR: {
+        variant: "error",
+        icon: FiXCircle,
+        title: "Error al cargar expedientes",
+        description: "No fue posible recuperar los expedientes disponibles."
+    },
+
+    // ==========================================
     // AUTHENTICATION
     // ==========================================
 

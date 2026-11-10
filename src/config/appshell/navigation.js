@@ -8,6 +8,11 @@ import {
   BarChart3,
 } from "lucide-react";
 
+import { LuFolders } from "react-icons/lu";
+import { FaCalendarAlt, FaFileSignature  } from "react-icons/fa";
+
+
+
 export const navigationByRole = {
   ADMIN: [
     {
@@ -28,7 +33,7 @@ export const navigationByRole = {
 
     {
       label: "Áreas",
-      path: "/portal/admin/areas",
+      path: "/portal/admin/sites",
       icon: MapPin,
     },
 
@@ -58,6 +63,59 @@ export const navigationByRole = {
       label: "Configuración",
       path: "/portal/admin/settings",
       icon: Settings,
+    },
+  ],
+  COLLABORATOR: [
+    {
+      label: "Inicio",
+      path: "/portal/collaborator",
+      icon: Home,
+    },
+    {
+      section: "GESTIÓN",
+    },
+    {
+      label: "Expedientes",
+      path: "/portal/collaborator/files",
+      icon: LuFolders,
+    },
+
+    {
+      label: "Citas",
+      path: "/portal/collaborator/appointments",
+      icon: FaCalendarAlt,
+    },
+
+    {
+      label: "Repositorio documental",
+      path: "/portal/collaborator/repo",
+      icon: FaFileSignature ,
+    },
+
+  ],
+  CLIENT: [
+    {
+      label: "Inicio",
+      path: "/portal/client",
+      icon: Home,
+    },
+    {
+      section: "GESTIÓN",
+    },
+    {
+      label: "Expedientes",
+      path: "/portal/client/files",
+      icon: LuFolders,
+    },
+    {
+      label: "Agenda",
+      path: "/portal/client/appointments",
+      icon: FaCalendarAlt,
+    },
+    {
+      label: "Documentos",
+      path: "/portal/client/repo",
+      icon: FaFileSignature,
     },
   ],
 };

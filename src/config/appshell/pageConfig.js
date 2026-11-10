@@ -13,7 +13,7 @@ export const pageConfig = {
                 "Consulta, crea y administra los usuarios de LexControl.",
         },
 
-        "/portal/admin/areas": {
+        "/portal/admin/sites": {
             title: "Gestión de áreas",
             description:
                 "Administra las áreas y su organización dentro de LexControl.",
@@ -42,7 +42,57 @@ export const pageConfig = {
             description:
                 "Administra las preferencias y configuraciones de la plataforma.",
         },
-    }
+    },
+    COLLABORATOR: {
+        "/portal/collaborator": {
+            type: "home",
+            description:
+                "Consulta tu actividad profesional y accede a las herramientas de gestión jurídica.",
+        },
+
+        "/portal/collaborator/files": {
+            title: "Gestión de expedientes",
+            description:
+                "Consulta, administra y realiza seguimiento a los expedientes jurídicos asignados.",
+        },
+
+        "/portal/collaborator/appointments": {
+            title: "Agenda de citas",
+            description:
+                "Organiza y consulta tus citas, reuniones y compromisos profesionales.",
+        },
+
+        "/portal/collaborator/repo": {
+            title: "Repositorio documental",
+            description:
+                "Consulta, organiza y administra los documentos asociados a la gestión jurídica.",
+        },
+    },
+    CLIENT: {
+        "/portal/client": {
+            type: "home",
+            description:
+                "Consulta el estado de tus procesos jurídicos y accede a la información y servicios asociados a tu representación legal.",
+        },
+
+        "/portal/client/files": {
+            title: "Mis expedientes",
+            description:
+                "Consulta tus expedientes jurídicos, revisa su estado procesal y conoce los avances de cada proceso.",
+        },
+
+        "/portal/client/appointments": {
+            title: "Mi agenda",
+            description:
+                "Consulta las reuniones con tu abogado y las audiencias judiciales programadas para tus procesos.",
+        },
+
+        "/portal/client/repo": {
+            title: "Mis documentos",
+            description:
+                "Accede a los soportes, documentos y actuaciones judiciales publicados por tu equipo jurídico.",
+        },
+    },
 };
 
 export const defaultPageConfig = {

@@ -13,7 +13,21 @@ const AppShell = React.lazy(() => import("../pages/private/layout/AppShell/AppSh
 
 // modulos de admin
 const UsuariosAdmin = React.lazy(() => import("../components/modules/admin/UsersManagement"));
-const AdminHome = React.lazy(() => import("../modules/admin/home/AdminHome"));
+const AdminHome = React.lazy(() => import("../components/modules/admin/home/AdminHome"));
+const SitesAdmin = React.lazy(() => import("../components/modules/admin/sites/Sites"));
+const CatalogsAdmin = React.lazy(() => import("../components/modules/admin/catalogs/Catalogs"));
+
+//modulos de collaborator
+const CollabHome = React.lazy(() => import("../components/modules/collaborator/home/CollabHome"));
+const CollabFiles = React.lazy(() => import("../components/modules/collaborator/files/Files"));
+const CollabRepo = React.lazy(() => import("../components/modules/collaborator/repo/Repo"));
+const CollabAppointments = React.lazy(() => import("../components/modules/collaborator/appointments/Appointments"));
+
+//modulos del cliente
+const ClientHome = React.lazy(() => import("../components/modules/client/home/ClientHome"));
+const ClientAgenda = React.lazy(() => import("../components/modules/client/agenda/Agenda"));
+const ClientDocs = React.lazy(() => import("../components/modules/client/docs/Docs"));
+const ClientExpedientes = React.lazy(() => import("../components/modules/client/expedientes/Expedientes"));
 
 const PrivateRoutes = [
     {
@@ -43,20 +57,56 @@ const PrivateRoutes = [
                         element: <AppShell />,
                         children: [
                             {
-                                path: "/portal/client/dash",
+                                path: "/portal/client",
                                 element: (
                                     <RequireRole 
                                     allowedRoles={["CLIENT"]}
                                     />
-                                )
+                                ),
+                                children: [
+                                    {
+                                        index: true,
+                                        element: <ClientHome />
+                                    },
+                                    {
+                                        path: "files",
+                                        element: <ClientExpedientes />
+                                    },
+                                    {
+                                        path: "appointments",
+                                        element: <ClientAgenda />
+                                    },
+                                    {
+                                        path: "repo",
+                                        element: <ClientDocs />
+                                    }
+                                ]
                             },
                             {
-                                path: "/portal/collaborator/dash",
+                                path: "/portal/collaborator",
                                 element: (
                                     <RequireRole 
                                     allowedRoles={["COLLABORATOR"]}
                                     />
-                                )
+                                ),
+                                children: [
+                                    {
+                                        index: true,
+                                        element: <CollabHome />
+                                    },
+                                    {
+                                        path: "files",
+                                        element: <CollabFiles />
+                                    },
+                                    {
+                                        path: "appointments",
+                                        element: <CollabAppointments />
+                                    },
+                                    {
+                                        path: "repo",
+                                        element: <CollabRepo />
+                                    }
+                                ]
                             },
                             {
                                 path: "/portal/admin",
@@ -73,6 +123,14 @@ const PrivateRoutes = [
                                     {
                                         path: "users",
                                         element: <UsuariosAdmin />
+                                    },
+                                    {
+                                        path: "sites",
+                                        element: <SitesAdmin />
+                                    },
+                                    {
+                                        path: "catalogs",
+                                        element: <CatalogsAdmin />
                                     }
                                 ]
                             }

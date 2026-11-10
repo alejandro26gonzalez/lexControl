@@ -20,11 +20,24 @@ def create_app():
     app.config.from_object(Config)
     app.config["EMAIL_LOGO_URL"] = os.getenv("EMAIL_LOGO_URL")
     
+    allowed_origins = []
+
+    if app.config["IS_PRODUCTION"]:
+        frontend_url = app.config.get("FRONTEND_URL")
+
+        if not frontend_url:
+            raise RuntimeError(
+                "FRONTEND_URL no está configurada."
+            )
+
+        allowed_origins.append(frontend_url.rstrip("/"))
+
+    else:
+        allowed_origins.append("http://localhost:5173")
+
     CORS(
         app,
-        origins=[
-            "http://localhost:5173"
-        ],
+        origins=allowed_origins,
         supports_credentials=True
     )
     
@@ -49,7 +62,15 @@ def create_app():
         Role,
         Session,
         PasswordResetOTP,
-        PasswordRecoverySession
+        PasswordRecoverySession,
+        Site,
+        Court,
+        Professional,
+        Specialty,
+        Agenda,
+        Expediente,
+        Documento,
+        Actuacion
     )
     
     from app.routes import register_routes

@@ -3,13 +3,15 @@ import os
 from dotenv import load_dotenv
 from sqlalchemy import over
 
-load_dotenv(override=True)
+load_dotenv(override=False)
 
 class Config:
     ENVIRONMENT = os.getenv(
         "ENVIRONMENT",
         "development"
     )
+    
+    IS_PRODUCTION = ENVIRONMENT.lower() == "production"
     
     SECRET_KEY = os.getenv(
         "SECRET_KEY"
@@ -51,5 +53,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     SESSION_COOKIE_HTTPONLY = True
-    SESSION_COOKIE_SAMESITE = "Lax"
-    SESSION_COOKIE_SECURE = False
+    SESSION_COOKIE_SAMESITE = (
+        "None" if IS_PRODUCTION else "Lax"
+    )
+    SESSION_COOKIE_SECURE = IS_PRODUCTION

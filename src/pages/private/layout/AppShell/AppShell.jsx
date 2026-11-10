@@ -1,4 +1,5 @@
 import { Outlet, useLocation } from "react-router-dom";
+import { useState } from "react";
 import {useAuth} from "../../../../context/AuthContext";
 import {
     pageConfig,
@@ -8,6 +9,7 @@ import {
 import Sidebar from "../Sidebar/Sidebar";
 import TopBar from "../TopBar/TopBar";
 import HeroImg from "../../../../assets/images/team/hero.png";
+import ProfileModal from "../../../../components/profile/ProfileModal";
 
 import {
     AppShellContainer,
@@ -23,6 +25,19 @@ function AppShell() {
 
     const { user, loading, isAuthenticated} = useAuth();
     const {pathname} = useLocation();
+
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [profileTab, setProfileTab] = useState("profile");
+
+    const handleOpenProfile = () => {
+        setProfileTab("profile");
+        setIsProfileOpen(true);
+    };
+
+    const handleOpenPreferences = () => {
+        setProfileTab("preferences");
+        setIsProfileOpen(true);
+    };
 
     if (loading) return null;
 
@@ -49,7 +64,11 @@ function AppShell() {
             <Sidebar role={role} />
 
             <AppShellMain>
-                <TopBar user={user} />
+                <TopBar 
+                user={user} 
+                onOpenProfile={handleOpenProfile}
+                onOpenPreferences={handleOpenPreferences}
+                />
 
                 <AppShellContent>
                     <WelcomeSection>
@@ -73,6 +92,14 @@ function AppShell() {
                     <Outlet />
                 </AppShellContent>
             </AppShellMain>
+
+            <ProfileModal
+                isOpen={isProfileOpen}
+                onClose={() => setIsProfileOpen(false)}
+                initialTab={profileTab}
+                user={user}
+            />
+            
         </AppShellContainer>
     )
 }

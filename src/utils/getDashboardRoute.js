@@ -3,10 +3,10 @@ export function getDashboardRoute(user) {
 
     switch (role) {
         case "CLIENT":
-            return "/portal/client/dash";
+            return "/portal/client";
 
         case "COLLABORATOR":
-            return "/portal/collaborator/dash";
+            return "/portal/collaborator";
 
         case "ADMIN":
             return "/portal/admin";
