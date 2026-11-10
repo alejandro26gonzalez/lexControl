@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
-
+import siderAuth from "../../../assets/images/auth/sider_auth.png";
 import { breakpoints } from "../../breakpoints";
 
 export const BackLink = styled(NavLink)`
@@ -96,7 +96,7 @@ export const ImageSection = styled.section`
 
     border-radius: ${({ theme }) => theme.borderRadius.large};
 
-    background-image: url("/src/assets/images/auth/sider_auth.png");
+    background-image: url(${siderAuth});
     background-size: cover;
     background-position: center;
 
