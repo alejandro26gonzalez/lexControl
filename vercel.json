@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/backend/:path*",
+      "destination": "https://lexcontrol-backend.onrender.com/:path*"
+    }
+  ]
+}
